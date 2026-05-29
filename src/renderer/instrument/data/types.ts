@@ -17,4 +17,7 @@ export interface IInstrument {
 	name: string
 	type: EInstrumentType
 	overlayId: string
+
+	axisList?: []
+	buttonList?: []
 }

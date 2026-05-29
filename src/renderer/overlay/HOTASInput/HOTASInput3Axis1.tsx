@@ -1,12 +1,18 @@
 import React from 'react'
-import GenericOverlay from '../shared/GenericOverlay'
+import { GLOBAL_COLOR } from '../../style/color'
 
-const HOTASInput3Axis1: React.FC<{ overlayId: string }> = ({ overlayId }) => {
+const HOTASInput3Axis1: React.FC = () => {
 
   return (
-    <GenericOverlay overlayId={overlayId}>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        border: `1px solid ${GLOBAL_COLOR.MINIMUM}`
+      }}
+    >
       HOTAS INPUT 3 AXIS 1
-    </GenericOverlay>
+    </div>
   )
 }
 

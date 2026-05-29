@@ -97,9 +97,9 @@ const InstrumentPanel: React.FC = () => {
       <div style={{
         marginBottom: GLOBAL_STYLE.GLOBAL_PADDING,
         display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gridGap: "10px",
-        gap: GLOBAL_STYLE.GLOBAL_PADDING,
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gridGap: GLOBAL_STYLE.GLOBAL_GAP,
+        gap: GLOBAL_STYLE.GLOBAL_GAP,
       }}>
         {selectedInstrumentList.map((item) => (
           <InstrumentButton

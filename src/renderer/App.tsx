@@ -9,7 +9,8 @@ import { GLOBAL_STYLE } from './style/style'
 import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
 import HOTASInput2Axis1 from './overlay/HOTASInput/HOTASInput2Axis1'
 import HOTASInput3Axis1 from './overlay/HOTASInput/HOTASInput3Axis1'
-import VirtualAxis from './overlay/VirtualController/VirtualAxis1'
+import GenericOverlay from './overlay/shared/GenericOverlay'
+import VirtualAxis1 from './overlay/VirtualController/VirtualAxis1'
 
 const styles = {
   tab: {
@@ -58,11 +59,23 @@ const App: React.FC = () => {
   console.log("id = " + id)
   switch (route) {
     case INSTRUMENT_CONST.HOTAS_INPUT_2_AXIS_1_ROUTE:
-      return <HOTASInput2Axis1 overlayId={id} />
+      return (
+      <GenericOverlay overlayId={id}>
+        <HOTASInput2Axis1/>
+      </GenericOverlay>
+    )
     case INSTRUMENT_CONST.HOTAS_INPUT_3_AXIS_1_ROUTE:
-      return <HOTASInput3Axis1 overlayId={id} />
+      return (
+        <GenericOverlay overlayId={id}>
+          <HOTASInput3Axis1/>
+        </GenericOverlay>
+      )
     case INSTRUMENT_CONST.VIRTUAL_AXIS_1_ROUTE:
-      return <VirtualAxis overlayId={id} />
+      return (
+        <GenericOverlay overlayId={id}>
+          <VirtualAxis1/>
+        </GenericOverlay>
+      )
   }
 
   return (
