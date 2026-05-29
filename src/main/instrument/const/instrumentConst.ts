@@ -1,0 +1,5 @@
+export class INSTRUMENT_CONST {
+    static readonly HOTAS_INPUT_2_AXIS_1_ROUTE = "HOTAS_INPUT_2_AXIS_1_ROUTE"
+    static readonly HOTAS_INPUT_3_AXIS_1_ROUTE = "HOTAS_INPUT_3_AXIS_1_ROUTE"
+    static readonly VIRTUAL_AXIS_1_ROUTE = "VIRTUAL_AXIS_1_ROUTE"
+}

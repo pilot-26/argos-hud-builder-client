@@ -1,0 +1,16 @@
+export const GLOBAL_COLOR = {
+    BRAND: '#1e293bFF',
+    BRAND_LITE: '#1e293b85',
+    PRIMARY: '#303030FF',
+    SECONDARY: '#303030FF',
+    TERTIARY: '#707070FF',
+    MINIMUM: '#D3D3D3FF',
+    BACKGROUND: '#E6E6E6FF',
+    CONTAINER: "#FFFFFFFF",
+    WHITE: '#FFFFFFFF',
+    BLACK: '#000000FF',
+    TRANSPARENT: 'transparent',
+    MASK: 'rgba(0, 0, 0, 0.8)',
+    MASK_LIGHT: 'rgba(0, 0, 0, 0.6)',
+    CAUTION: '#E04242FF',
+   }
