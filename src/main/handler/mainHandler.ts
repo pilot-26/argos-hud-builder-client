@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
-import { windowMap } from '../overlay'
+import { windowMap } from './overlayHandler'
 import { MAIN_CONST } from '../const/mainConst'
 
 const isDev = !app.isPackaged
@@ -16,7 +16,7 @@ export const createWindow = (): void => {
     frame: false,
     titleBarStyle: 'hidden',
     webPreferences: {
-      partition: 'persist:argos',
+      partition: 'persist:argos-client',
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, '..', 'preload.js'),

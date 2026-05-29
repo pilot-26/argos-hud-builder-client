@@ -1,14 +1,14 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import path from 'path'
-import { IOverlay } from "./data/types"
-import { OVERLAY_CONST } from './const/overlayConst'
-import { mainWindow } from '../index'
+import { OVERLAY_CONST } from "../overlay/const/overlayConst"
+import { mainWindow } from './mainHandler'
 import { MAIN_CONST } from '../const/mainConst'
+import { IOverlayOption } from '../overlay/data/types'
 
 const isDev = !app.isPackaged
 
 export const windowMap = new Map<string, BrowserWindow>()
-export const optionMap = new Map<string, IOverlay>()
+export const optionMap = new Map<string, IOverlayOption>()
 
 const onCreate = (window: BrowserWindow, id: string) => {
   window.webContents.send("on-create", id)
@@ -35,8 +35,8 @@ const onMaximizeChange = (window: BrowserWindow, id: string, isMaximized: boolea
 }
 
 ipcMain.handle('create', (
-  arg,
-  overlayOption: IOverlay,
+  event,
+  overlayOption: IOverlayOption,
 ) => {
   if (windowMap.has(overlayOption.id)) {
     return OVERLAY_CONST.ALREADY_EXISTS
@@ -140,11 +140,11 @@ const close = (id: string): number => {
   return OVERLAY_CONST.SUCCESS
 }
 
-ipcMain.handle('close', (arg, id: string) => {
+ipcMain.handle('close', (event, id: string) => {
   return close(id)
 })
 
-ipcMain.handle('get-position', (arg, id: string) => {
+ipcMain.handle('get-position', (event, id: string) => {
   const overlayWindow = windowMap.get(id)
   if (!overlayWindow) {
     return undefined
@@ -156,7 +156,7 @@ ipcMain.handle('get-position', (arg, id: string) => {
   return { x, y }
 })
 
-ipcMain.handle('set-position', (arg, id: string, position: { x: number; y: number }) => {
+ipcMain.handle('set-position', (event, id: string, position: { x: number; y: number }) => {
   const overlayWindow = windowMap.get(id)
   if (!overlayWindow) {
     return OVERLAY_CONST.NOT_FOUND
@@ -168,7 +168,7 @@ ipcMain.handle('set-position', (arg, id: string, position: { x: number; y: numbe
   return OVERLAY_CONST.SUCCESS
 })
 
-ipcMain.handle('get-size', (arg, id: string) => {
+ipcMain.handle('get-size', (event, id: string) => {
   const overlayWindow = windowMap.get(id)
   if (!overlayWindow) {
     return undefined
@@ -180,7 +180,7 @@ ipcMain.handle('get-size', (arg, id: string) => {
   return { width, height }
 })
 
-ipcMain.handle('set-size', (arg, id: string, size: { width: number; height: number }) => {
+ipcMain.handle('set-size', (event, id: string, size: { width: number; height: number }) => {
   const overlayWindow = windowMap.get(id)
   if (!overlayWindow) {
     return OVERLAY_CONST.NOT_FOUND
@@ -219,11 +219,11 @@ const pin = (id: string, isPinned: boolean): number => {
   return OVERLAY_CONST.SUCCESS
 }
 
-ipcMain.handle("pin", (arg, id: string, isPinned: boolean) => {
+ipcMain.handle("pin", (event, id: string, isPinned: boolean) => {
   return pin(id, isPinned)
 })
 
-function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: boolean, overlayOption?: IOverlay) {
+function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: boolean, overlayOption?: IOverlayOption) {
   if (isMaximized) {
     if (overlayOption) {
       overlayOption.isMaximized = true
@@ -257,7 +257,7 @@ const maximize = (id: string, isMaximized: boolean): number => {
   return OVERLAY_CONST.SUCCESS
 }
 ipcMain.handle('maximize', (
-  arg,
+  event,
   id: string,
   isMaximized: boolean,
 ) => {
@@ -265,7 +265,7 @@ ipcMain.handle('maximize', (
 })
 
 ipcMain.on("show-context-menu", (
-  arg,
+  event,
   id: string
 ) => {
   console.log("show-context-menu", id)

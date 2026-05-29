@@ -1,11 +1,13 @@
-import { IInstrument } from "../../../main/instrument/data/types"
+import { IInstrument } from "./data/types"
+
+const INSTRUMENT_LIST_FILENAME = 'instrumentList.json'
 
 export class InstrumentStorage {
 	static async setInstrumentList(instrumentList: IInstrument[]) {
-		await window.storageAPI.setInstrumentList(instrumentList)
+		await window.storageAPI.write(INSTRUMENT_LIST_FILENAME, instrumentList)
 	}
 	static async getInstrumentList(): Promise<IInstrument[]> {
-		const list = await window.storageAPI.getInstrumentList()
+		const list = await window.storageAPI.read(INSTRUMENT_LIST_FILENAME) as IInstrument[]
 		if (list) {
 			try {
 				const newList: IInstrument[] = []
@@ -23,7 +25,7 @@ export class InstrumentStorage {
 				return newList
 			} catch (error) {
 				console.error("Error parsing instrument list:", error)
-				await window.storageAPI.setInstrumentList([])
+				await InstrumentStorage.setInstrumentList([])
 				return []
 			}
 		}

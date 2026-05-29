@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { IInstrument } from '../../main/instrument/data/types'
+import { IInstrument } from '../instrument/data/types'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from './ButtonForMouse'
 import { instrumentPanelStyle } from '../instrument/InstrumentPanelStyle'
-import { OverlayStorage } from '../overlay/storage/overlayStorage'
-import { IOverlay } from '../../main/overlay/data/types'
+import { OverlayStorage } from '../overlay/overlayStorage'
+import { IOverlay } from '../overlay/data/types'
 
 const InstrumentButton: React.FC<{
 	item: IInstrument,

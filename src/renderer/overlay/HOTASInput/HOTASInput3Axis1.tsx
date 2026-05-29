@@ -1,5 +1,5 @@
 import React from 'react'
-import GenericOverlay from './GenericOverlay'
+import GenericOverlay from '../shared/GenericOverlay'
 
 const HOTASInput3Axis1: React.FC<{ overlayId: string }> = ({ overlayId }) => {
 

@@ -1,8 +1,9 @@
 import { app, BrowserWindow, Menu } from 'electron'
-import './overlay'
-import './index'
-import { createWindow } from "./index"
-import "./storage/storageHandlers"
+import './handler/mainHandler'
+import "./handler/overlayHandler"
+import "./handler/storageHandler"
+import "./handler/virtualAPIHandler"
+import { createWindow } from './handler/mainHandler'
 
 const isDev = !app.isPackaged
 

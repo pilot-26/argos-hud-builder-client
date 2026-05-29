@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IOverlay } from './overlay/data/types'
 import { IAxisInput, IButtonInput } from './virtual/types'
+import { IOverlayOption } from './overlay/data/types'
 
 declare global {
   const SHOW_CONSOLE = false
@@ -16,7 +16,7 @@ declare global {
     overlay: {
       receive: (channel: string, func: (...args: any[]) => void) => void
       getActiveList: () => Promise<string[]>
-      create: (overlay: IOverlay) => Promise<number>
+      create: (overlay: IOverlayOption) => Promise<number>
       close: (id: string) => Promise<number>
       pin: (id: string, isPinned: boolean) => Promise<number>
       maximize: (id: string, isMaximized: boolean) => Promise<number>
@@ -33,10 +33,8 @@ declare global {
       connect: (host: string, port: number) => Promise<void>
     },
     storageAPI: {
-      getInstrumentList: () => Promise<any[]>
-      setInstrumentList: (instrumentList: any[]) => Promise<void>
-      getOverlay: (id: string) => Promise<any>
-      setOverlay: (overlay: any) => Promise<void>
+      write: (name: string, data: any) => Promise<void>
+      read: (name: string) => Promise<any | undefined>
     }
   }
 }
@@ -68,7 +66,7 @@ contextBridge.exposeInMainWorld('overlay', {
     }
   },
   getActiveList: () => ipcRenderer.invoke('get-active-list'),
-  create: (overlay: IOverlay) => ipcRenderer.invoke('create', overlay),
+  create: (overlay: IOverlayOption) => ipcRenderer.invoke('create', overlay),
   close: (id: string) => ipcRenderer.invoke('close', id),
   pin: (id: string, isPinned: boolean) => ipcRenderer.invoke('pin', id, isPinned),
   maximize: (id: string, isMaximized: boolean) => ipcRenderer.invoke('maximize', id, isMaximized),
@@ -84,16 +82,11 @@ contextBridge.exposeInMainWorld('virtualAPI', {
   sendButtonInput: (input: IButtonInput) => ipcRenderer.invoke('send-button-input', input)
 })
 
-
-
-
 contextBridge.exposeInMainWorld('SDLAPI', {
   connect: (host: string, port: number) => ipcRenderer.invoke('connect', { host, port })
 })
 
 contextBridge.exposeInMainWorld('storageAPI', {
-  getInstrumentList: () => ipcRenderer.invoke('storage:getInstrumentList'),
-  setInstrumentList: (instrumentList: any[]) => ipcRenderer.invoke('storage:setInstrumentList', instrumentList),
-  getOverlay: (id: string) => ipcRenderer.invoke('storage:getOverlay', id),
-  setOverlay: (overlay: any) => ipcRenderer.invoke('storage:setOverlay', overlay)
+  write: (name: string, data: any) => ipcRenderer.invoke('wrtie', name, data),
+  read: (name: string) => ipcRenderer.invoke('read', name),
 })

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import GenericOverlay from './GenericOverlay'
-import { GLOBAL_COLOR } from '../style/color'
+import GenericOverlay from '../shared/GenericOverlay'
+import { GLOBAL_COLOR } from '../../style/color'
 
 
 const HOTASInput2Axis1: React.FC<{ overlayId: string }> = ({ overlayId }) => {

@@ -18,17 +18,3 @@ export interface IInstrument {
 	type: EInstrumentType
 	overlayId: string
 }
-
-export interface IAxis {
-	deviceName: string
-	deviceAddress: string
-	reportID: number
-	offset: number
-	maxInput: number
-	minInput: number
-}
-
-export interface IHOTASInput extends IInstrument {
-	maxTrackedAxisCount: number
-	trackedAxisList: IAxis[]
-}

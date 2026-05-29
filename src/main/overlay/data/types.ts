@@ -1,4 +1,4 @@
-export interface IOverlay {
+export interface IOverlayOption {
   id: string
   monitorID?: string
   route: string

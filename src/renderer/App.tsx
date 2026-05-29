@@ -6,10 +6,10 @@ import TitleBar from './components/TitleBar'
 import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
-import { INSTRUMENT_CONST } from '../main/instrument/const/instrumentConst'
-import HOTASInput2Axis1 from './overlay/HOTASInput2Axis1'
-import HOTASInput3Axis1 from './overlay/HOTASInput3Axis1'
-import VirtualAxis from './overlay/VirtualAxis1'
+import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
+import HOTASInput2Axis1 from './overlay/HOTASInput/HOTASInput2Axis1'
+import HOTASInput3Axis1 from './overlay/HOTASInput/HOTASInput3Axis1'
+import VirtualAxis from './overlay/VirtualController/VirtualAxis1'
 
 const styles = {
   tab: {

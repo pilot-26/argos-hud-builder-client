@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { GLOBAL_STYLE } from '../style/style'
-import { GLOBAL_COLOR } from '../style/color'
-import { OverlayStorage } from './storage/overlayStorage'
-import { IOverlay } from '../../main/overlay/data/types'
+import { GLOBAL_STYLE } from '../../style/style'
+import { GLOBAL_COLOR } from '../../style/color'
+import { OverlayStorage } from '../overlayStorage'
+import { IOverlay } from '../data/types'
 
 const GenericOverlay: React.FC<{
 	overlayId: string,
