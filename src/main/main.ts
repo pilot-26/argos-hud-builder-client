@@ -107,6 +107,7 @@ app.whenReady().then(() => {
   createMainWindow()
 })
 
+app.disableHardwareAcceleration()
 app.on('window-all-closed', () => {
   WindowManager.mainWindow = null
 })

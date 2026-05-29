@@ -39,12 +39,9 @@ ipcMain.handle('create', (
   overlayOption: IOverlayOption,
   args?: object
 ) => {
-  if (WindowManager.windowMap.has(overlayOption.id)) {
-    return OVERLAY_CONST.ALREADY_EXISTS
-  }
-
   console.log(overlayOption)
 
+  if (WindowManager.windowMap.has(overlayOption.id)) return
   const browserWindow = new BrowserWindow({
     width: overlayOption.width,
     height: overlayOption.height,
@@ -128,25 +125,15 @@ ipcMain.handle('create', (
   if (MAIN_CONST.SHOW_CONSOLE) {
     browserWindow.webContents.openDevTools()
   }
-
-  return OVERLAY_CONST.SUCCESS
 })
 
 ipcMain.handle('get-active-list', () => {
   return Array.from(WindowManager.windowMap.keys())
 })
 
-const close = (id: string): number => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
-  if (overlayWindow.isDestroyed()) {
-    return OVERLAY_CONST.OVERLAY_NOT_ACTIVE
-  }
-
+const close = (id: string) => {
+  const overlayWindow = getBrowserWindow(id)
   overlayWindow.close()
-  return OVERLAY_CONST.SUCCESS
 }
 
 ipcMain.handle('close', (event, id: string) => {
@@ -165,55 +152,44 @@ ipcMain.handle('get-position', (event, id: string) => {
   return { x, y }
 })
 
+const getBrowserWindow = (id: string): BrowserWindow => {
+  const browserWindow = WindowManager.windowMap.get(id)
+  if (!browserWindow) {
+    throw new Error("Overlay not found")
+  }
+  if (browserWindow.isDestroyed()) {
+    throw new Error("Overlay not active")
+  }
+  return browserWindow
+}
+const getOverlayOption = (id: string): IOverlayOption => {
+  const overlayOption = optionMap.get(id)
+  if (!overlayOption) {
+    throw new Error("Overlay not found")
+  }
+  return overlayOption
+}
+
 ipcMain.handle('set-position', (event, id: string, position: { x: number; y: number }) => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
-  if (overlayWindow.isDestroyed()) {
-    return OVERLAY_CONST.OVERLAY_NOT_ACTIVE
-  }
+  const overlayWindow = getBrowserWindow(id)
   overlayWindow.setPosition(position.x, position.y)
-  return OVERLAY_CONST.SUCCESS
 })
 
 ipcMain.handle('get-size', (event, id: string) => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow) {
-    return undefined
-  }
-  if (overlayWindow.isDestroyed()) {
-    return undefined
-  }
+  const overlayWindow = getBrowserWindow(id)
   const [width, height] = overlayWindow.getSize()
   return { width, height }
 })
 
 ipcMain.handle('set-size', (event, id: string, size: { width: number; height: number }) => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
-  if (overlayWindow.isDestroyed()) {
-    return OVERLAY_CONST.OVERLAY_NOT_ACTIVE
-  }
+  const overlayWindow = getBrowserWindow(id)
   overlayWindow.setSize(size.width, size.height)
   return OVERLAY_CONST.SUCCESS
 })
 
-const pin = (id: string, isPinned: boolean): number => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
-  if (overlayWindow.isDestroyed()) {
-    return OVERLAY_CONST.OVERLAY_NOT_ACTIVE
-  }
-
-  const overlayOption = optionMap.get(id)
-  if (!overlayOption) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
+const pin = (id: string, isPinned: boolean) => {
+  const overlayWindow = getBrowserWindow(id)
+  const overlayOption = getOverlayOption(id)
 
   overlayWindow.setAlwaysOnTop(isPinned)
   overlayWindow.setResizable(!isPinned)
@@ -225,7 +201,6 @@ const pin = (id: string, isPinned: boolean): number => {
   optionMap.set(id, overlayOption)
 
   onPinChange(overlayWindow, id, isPinned)
-  return OVERLAY_CONST.SUCCESS
 }
 
 ipcMain.handle("pin", (event, id: string, isPinned: boolean) => {
@@ -254,23 +229,19 @@ function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: bool
   }
 }
 
-const maximize = (id: string, isMaximized: boolean): number => {
-  const overlayWindow = WindowManager.windowMap.get(id)
-  if (!overlayWindow || overlayWindow.isDestroyed()) {
-    return OVERLAY_CONST.NOT_FOUND
-  }
+const maximize = (id: string, isMaximized: boolean) => {
+  const overlayWindow = getBrowserWindow(id)
+  const overlayOption = getOverlayOption(id)
 
-  const overlayOption = optionMap.get(id)
   setMaximize(id, overlayWindow, isMaximized, overlayOption)
   onMaximizeChange(overlayWindow, id, isMaximized)
-  return OVERLAY_CONST.SUCCESS
 }
 ipcMain.handle('maximize', (
   event,
   id: string,
   isMaximized: boolean,
 ) => {
-  return maximize(id, isMaximized)
+  maximize(id, isMaximized)
 })
 
 ipcMain.on("show-context-menu", (

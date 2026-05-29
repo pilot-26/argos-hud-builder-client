@@ -15,21 +15,24 @@ declare global {
     overlay: {
       receive: (channel: string, func: (...args: any[]) => void) => void
       getActiveList: () => Promise<string[]>
-      create: (overlay: IOverlayOption, args?: object) => Promise<number>
-      close: (id: string) => Promise<number>
-      pin: (id: string, isPinned: boolean) => Promise<number>
-      maximize: (id: string, isMaximized: boolean) => Promise<number>
+      create: (overlay: IOverlayOption, args?: object) => Promise<void>
+      close: (id: string) => Promise<void>
+      pin: (id: string, isPinned: boolean) => Promise<void>
+      maximize: (id: string, isMaximized: boolean) => Promise<void>
       getPosition: (id: string) => Promise<{ x: number; y: number } | undefined>
-      setPosition: (id: string, position: { x: number; y: number }) => Promise<number>
-      showContextMenu: (id: string) => void
+      setPosition: (id: string, position: { x: number; y: number }) => Promise<void>
+      showContextMenu: (id: string) => Promise<void>
     },
     virtualAPI: {
       connect: (host: string, port: number) => Promise<void>
       send: (message: any) => Promise<void>
       disconnect: () => Promise<void>
     },
-    SDLAPI: {
+    inputAPI: {
       connect: (host: string, port: number) => Promise<void>
+      send: (message: any) => Promise<void>
+      sendAndReceive: (message: any) => Promise<string | undefined>
+      disconnect: () => Promise<void>
     },
     storageAPI: {
       write: (name: string, data: any) => Promise<void>
@@ -63,16 +66,19 @@ contextBridge.exposeInMainWorld('overlay', {
 })
 
 contextBridge.exposeInMainWorld('virtualAPI', {
-  connect: (host: string, port: number) => ipcRenderer.invoke('connect', { host, port }),
-  send: (message: any) => ipcRenderer.invoke('send', message),
-  disconnect: () => ipcRenderer.invoke('disconnect')
+  connect: (host: string, port: number) => ipcRenderer.invoke('virtual-api-connect', { host, port }),
+  send: (message: any) => ipcRenderer.invoke('virtual-api-send', message),
+  disconnect: () => ipcRenderer.invoke('virtual-api-disconnect')
 })
 
-contextBridge.exposeInMainWorld('SDLAPI', {
-  connect: (host: string, port: number) => ipcRenderer.invoke('connect', { host, port })
+contextBridge.exposeInMainWorld('inputAPI', {
+  connect: (host: string, port: number) => ipcRenderer.invoke('input-api-connect', { host, port }),
+  send: (message: any) => ipcRenderer.invoke('input-api-send', message),
+  sendAndReceive: (message: any) => ipcRenderer.invoke('input-api-send-and-receive', message),
+  disconnect: () => ipcRenderer.invoke('input-api-disconnect')
 })
 
 contextBridge.exposeInMainWorld('storageAPI', {
-  write: (name: string, data: any) => ipcRenderer.invoke('wrtie', name, data),
+  write: (name: string, data: any) => ipcRenderer.invoke('write', name, data),
   read: (name: string) => ipcRenderer.invoke('read', name),
 })

@@ -19,7 +19,6 @@ const InstrumentButton: React.FC<{
 	const [isPinned, setIsPinned] = useState(false)
 
 	const saveOverlay = async (overlay: IOverlay) => {
-		console.log("saved Overlay", overlay)
 		OverlayStorage.setOverlay(overlay)
 	}
 

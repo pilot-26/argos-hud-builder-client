@@ -35,12 +35,13 @@ const App: React.FC = () => {
       if (hash.includes("#/")) {
         const route = hash.split('/')[1].split('?')[0]
         const argStr = hash.split('?')[1]
-        const args = argStr.split("&")
+        const args = argStr ? argStr.split("&") : []
+        const newArgsObject: any = {}
         for (const each of args) {
           const split = each.split("=")
-          argsObject[split[0]] = split[1]
+          newArgsObject[split[0]] = split[1]
         }
-        setArgsObject(argsObject)
+        setArgsObject(newArgsObject)
         setRoute(route)
       } else {
         setRoute("")

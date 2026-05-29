@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron'
 import { FileStorage } from '../storage/fileStorage'
 
-ipcMain.handle("wrtie", (event, name: string, data: any) => {
+ipcMain.handle("write", (event, name: string, data: any) => {
   FileStorage.writeJson(name, data)
 })
 

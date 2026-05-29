@@ -1,13 +1,18 @@
-export enum ECommandType {
+export enum EVCommandType {
   REGISTER = "REGISTER",
-  SEND_AXIS_INPUT = "SEND_AXIS_INPUT",
-  SEND_BUTTON_INPUT = "SEND_BUTTON_INPUT",
+  SEND_INPUT = "SEND_INPUT",
   DELETE = "DELETE"
 }
 
-export interface ICommandMessage {
-  type: ECommandType,
-  id: string,
+export enum EVControlType {
+  AXIS = "AXIS",
+  BUTTON = "BUTTON"
+}
+
+export interface IVCommandMessage {
+  VCommandType: EVCommandType,
+  VControlId: string,
+  VControlType: EVControlType,
   axisValue?: number,
   buttonValue?: boolean,
 }

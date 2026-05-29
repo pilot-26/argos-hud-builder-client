@@ -1,29 +1,18 @@
 import { ipcMain } from 'electron'
-import net from "net"
+import { TCPClient } from '../tcp/client'
 
-let client: net.Socket | undefined = undefined
-
-function connectToServer(host: string, port: number) {
-  client = net.createConnection({
-    host,
-    port
-  }, () => {
-    console.log('Connected to server')
-  })
-}
-
-function disconnectFromServer() {
-  client?.end()
-}
-
-ipcMain.handle("connect", (event, option) => {
-  connectToServer(option.host, option.port)
+let mTCPClient: TCPClient | undefined = undefined
+ipcMain.handle("virtual-api-connect", async (event, option) => {
+  if (mTCPClient) return
+  
+  mTCPClient = new TCPClient(option.host, option.port)
+  await mTCPClient.connect()
 })
 
-ipcMain.handle("disconnect", (event) => {
-  disconnectFromServer()
+ipcMain.handle("virtual-api-disconnect", (event) => {
+  mTCPClient?.disconnect()
 })
 
-ipcMain.handle("send", async (event, message) => {
-  client?.write(JSON.stringify(message))
+ipcMain.handle("virtual-api-send", async (event, message): Promise<void> => {
+  await mTCPClient?.send(message)
 })
