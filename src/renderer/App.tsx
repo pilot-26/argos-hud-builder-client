@@ -27,7 +27,7 @@ const styles = {
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'instrument' | 'settings'>('instrument')
   const [route, setRoute] = useState<string>("")
-  const [id, setId] = useState<string>("")
+  const [argsObject, setArgsObject] = useState<any>({})
 
   useEffect(() => {
     const checkHash = () => {
@@ -37,17 +37,13 @@ const App: React.FC = () => {
         const argStr = hash.split('?')[1]
         const args = argStr.split("&")
         for (const each of args) {
-          if (each.includes("id=")) {
-            const idDecoded = each.split("id=")
-            console.log("id = " + idDecoded[1])
-            setId(idDecoded[1])
-            break
-          }
+          const split = each.split("=")
+          argsObject[split[0]] = split[1]
         }
+        setArgsObject(argsObject)
         setRoute(route)
       } else {
         setRoute("")
-        setId("")
       }
     }
     checkHash()
@@ -56,24 +52,24 @@ const App: React.FC = () => {
   }, [])
 
   console.log("route = " + route)
-  console.log("id = " + id)
+  console.log("args = " )
   switch (route) {
     case INSTRUMENT_CONST.HOTAS_INPUT_2_AXIS_1_ROUTE:
       return (
-      <GenericOverlay overlayId={id}>
+      <GenericOverlay overlayId={argsObject.id}>
         <HOTASInput2Axis1/>
       </GenericOverlay>
     )
     case INSTRUMENT_CONST.HOTAS_INPUT_3_AXIS_1_ROUTE:
       return (
-        <GenericOverlay overlayId={id}>
+        <GenericOverlay overlayId={argsObject.id}>
           <HOTASInput3Axis1/>
         </GenericOverlay>
       )
     case INSTRUMENT_CONST.VIRTUAL_AXIS_1_ROUTE:
       return (
-        <GenericOverlay overlayId={id}>
-          <VirtualAxis1/>
+        <GenericOverlay overlayId={argsObject.id}>
+          <VirtualAxis1 args={argsObject}/>
         </GenericOverlay>
       )
   }

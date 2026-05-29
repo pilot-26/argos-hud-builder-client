@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import GenericOverlay from '../shared/GenericOverlay'
 import { GLOBAL_COLOR } from '../../style/color'
 
 

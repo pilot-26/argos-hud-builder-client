@@ -28,15 +28,10 @@ const InstrumentButton: React.FC<{
 		if (!savedOverlay) return
 		console.log("savedOverlay", savedOverlay)
 
+		setIsEnabled(savedOverlay.isEnabled)
+		setIsPinned(savedOverlay.isPinned)
 		if (savedOverlay.isEnabled) {
-			setIsEnabled(true)
-			await window.overlay.create(savedOverlay)
-		} else {
-			setIsEnabled(false)
-		}
-
-		if (savedOverlay.isPinned) {
-			setIsPinned(true)
+			enableOverlay(savedOverlay)
 		}
 	}
 
@@ -87,12 +82,20 @@ const InstrumentButton: React.FC<{
 		onDelete?.(item.id)
 	}
 
-	const enableOverlay = async () => {
+	const enableOverlay = async (overlay: IOverlay) => {
+		setIsEnabled(true)
+		const args: any = {}
+		item.controlList?.forEach((each, index) => {
+			args[`controlId${index}`] = each.id
+		})
+		window.overlay.create(overlay, args)
+	}
+
+	const handleUserEnableOverlay = async () => {
 		const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
 		if (!savedOverlay) return
 
-		setIsEnabled(true)
-		window.overlay.create(savedOverlay)
+		enableOverlay(savedOverlay)
 	}
 
 	const disableOverlay = () => {
@@ -151,7 +154,7 @@ const InstrumentButton: React.FC<{
 						style={instrumentPanelStyle.instrumentControlButton}
 						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
 						onClick={() => {
-							enableOverlay()
+							handleUserEnableOverlay()
 						}}
 					>
 						Enable Overlay

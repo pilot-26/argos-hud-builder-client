@@ -3,7 +3,7 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IInstrumentTemplate, EInstrumentType, IInstrument } from './data/types'
+import { IInstrumentTemplate, EInstrumentType, IInstrument, IControl } from './data/types'
 import { v4 as uuidv4 } from 'uuid'
 import { INSTRUMENT_CONST } from './const/instrumentConst'
 import InstrumentButton from './InstrumentButton'
@@ -11,29 +11,6 @@ import { OverlayStorage } from '../overlay/overlayStorage'
 import { OVERLAY_CONST } from '../../main/overlay/const/overlayConst'
 import { InstrumentStorage } from './instrumentStorage'
 import { IOverlay } from '../overlay/data/types'
-
-const instrumentTemplateList: IInstrumentTemplate[] = [
-  {
-    name: "HOTAS Input 2 Axis",
-    type: EInstrumentType.HOTAS_INPUT,
-    route: INSTRUMENT_CONST.HOTAS_INPUT_2_AXIS_1_ROUTE,
-    isInteractable: false,
-    fixedAspectRatio: 1,
-  },
-  {
-    name: "HOTAS Input 3 Axis",
-    type: EInstrumentType.HOTAS_INPUT,
-    route: INSTRUMENT_CONST.HOTAS_INPUT_3_AXIS_1_ROUTE,
-    isInteractable: false,
-    fixedAspectRatio: 1,
-  },
-  {
-    name: "Virtual Axis 1",
-    type: EInstrumentType.VIRTUAL_CONTROLLER,
-    route: INSTRUMENT_CONST.VIRTUAL_AXIS_1_ROUTE,
-    isInteractable: true,
-  }
-]
 
 const InstrumentPanel: React.FC = () => {
   const [showAddModal, setShowAddModal] = React.useState(false)
@@ -51,7 +28,28 @@ const InstrumentPanel: React.FC = () => {
   }
 
   const handleInstrumentAdd = (item: IInstrumentTemplate) => {
+    // save instrument
     const overlayId = uuidv4()
+    const newInstrument: IInstrument = {
+      ...item,
+      id: uuidv4(),
+      overlayId: overlayId,
+    }
+    if (item.controlTypeList) {
+      const controlList: IControl[] = []
+      for (const each of item.controlTypeList) {
+        controlList.push({
+          id: uuidv4(),
+          type: each
+        })
+      }
+      newInstrument.controlList = controlList
+    }
+    const newList = [...selectedInstrumentList, newInstrument]
+    setSelectedInstrumentList(newList)
+    InstrumentStorage.setInstrumentList(newList)
+
+    // save overlay
     const newOverlay: IOverlay = {
       isInteractable: item.isInteractable,
       id: overlayId,
@@ -66,15 +64,7 @@ const InstrumentPanel: React.FC = () => {
       y: OVERLAY_CONST.DEFAULT_POSITION_Y,
       fixedAspectRatio: item.fixedAspectRatio,
     }
-    const newInstrument: IInstrument = {
-      ...item,
-      id: uuidv4(),
-      overlayId: overlayId,
-    }
     OverlayStorage.setOverlay(newOverlay)
-    const newList = [...selectedInstrumentList, newInstrument]
-    setSelectedInstrumentList(newList)
-    InstrumentStorage.setInstrumentList(newList)
 
     setShowAddModal(false)
   }
@@ -152,7 +142,7 @@ const InstrumentPanel: React.FC = () => {
                 gridGap: "10px",
                 gap: GLOBAL_STYLE.GLOBAL_PADDING,
               }}>
-                {instrumentTemplateList.map((item) => (
+                {INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET.map((item) => (
                   <ButtonForMouse
                     key={item.name}
                     style={{

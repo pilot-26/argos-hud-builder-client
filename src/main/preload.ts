@@ -15,7 +15,7 @@ declare global {
     overlay: {
       receive: (channel: string, func: (...args: any[]) => void) => void
       getActiveList: () => Promise<string[]>
-      create: (overlay: IOverlayOption) => Promise<number>
+      create: (overlay: IOverlayOption, args?: object) => Promise<number>
       close: (id: string) => Promise<number>
       pin: (id: string, isPinned: boolean) => Promise<number>
       maximize: (id: string, isMaximized: boolean) => Promise<number>
@@ -65,7 +65,7 @@ contextBridge.exposeInMainWorld('overlay', {
     }
   },
   getActiveList: () => ipcRenderer.invoke('get-active-list'),
-  create: (overlay: IOverlayOption) => ipcRenderer.invoke('create', overlay),
+  create: (overlay: IOverlayOption, args?: object) => ipcRenderer.invoke('create', overlay, args),
   close: (id: string) => ipcRenderer.invoke('close', id),
   pin: (id: string, isPinned: boolean) => ipcRenderer.invoke('pin', id, isPinned),
   maximize: (id: string, isMaximized: boolean) => ipcRenderer.invoke('maximize', id, isMaximized),

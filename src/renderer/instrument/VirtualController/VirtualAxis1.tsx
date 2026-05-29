@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
 
-const VirtualAxis1: React.FC = () => {
+const VirtualAxis1: React.FC<{args: any}> = ({args}) => {
+  const [axisId, setAxisId] = useState<string>(args.controlId0)
   const [axisValue, setAxisValue] = useState<number>()
 
   useEffect(() => {
+    console.log(args)
+    console.log(args.controlId0)
+    setAxisId(args.controlId0)
     const initController = async () => {
       try {
 
@@ -49,6 +53,7 @@ const VirtualAxis1: React.FC = () => {
           onChange={(e) => setAxisValue(parseFloat(e.target.value))}
           style={{ width: '100%' }}
         />
+        { "Goodbyte" + axisId }
       </div>
     </div>
   )

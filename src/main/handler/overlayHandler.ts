@@ -37,6 +37,7 @@ const onMaximizeChange = (window: BrowserWindow, id: string, isMaximized: boolea
 ipcMain.handle('create', (
   event,
   overlayOption: IOverlayOption,
+  args?: object
 ) => {
   if (windowMap.has(overlayOption.id)) {
     return OVERLAY_CONST.ALREADY_EXISTS
@@ -74,10 +75,18 @@ ipcMain.handle('create', (
   }
   setMaximize(overlayOption.id, browserWindow, overlayOption.isMaximized, overlayOption)
 
+  let additionalArgs = ""
+  if (args) {
+  Object.entries(args).forEach(([prop, value]) => {
+    additionalArgs += `&${prop}=${value}`
+  })
+    console.log(additionalArgs)
+  }
+
   if (isDev) {
-    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?id=${overlayOption.id}&test=null`)
+    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}`)
   } else {
-    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?id=${overlayOption.id}&test=null` })
+    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}` })
   }
 
   browserWindow.on('move', () => {

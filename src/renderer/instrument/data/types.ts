@@ -4,8 +4,7 @@ export interface IInstrumentTemplate {
 	route: string,
 	isInteractable: boolean,
 	fixedAspectRatio?: number,
-	axisCount?: number,
-	buttonCount?: number
+	controlTypeList?: EControlType[]
 }
 
 export enum EInstrumentType {
@@ -14,12 +13,21 @@ export enum EInstrumentType {
 	VIRTUAL_CONTROLLER = "VIRTUAL_CONTROLLER",
 }
 
+export enum EControlType {
+	AXIS = "AXIS",
+	BUTTON = "BUTTON"
+}
+
+export interface IControl {
+	id: string
+	type: EControlType
+}
+
 export interface IInstrument {
 	id: string
 	name: string
 	type: EInstrumentType
 	overlayId: string
 
-	axisList?: []
-	buttonList?: []
+	controlList?: IControl[]
 }
