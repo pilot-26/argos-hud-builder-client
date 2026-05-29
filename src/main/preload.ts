@@ -1,5 +1,4 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IAxisInput, IButtonInput } from './virtual/types'
 import { IOverlayOption } from './overlay/data/types'
 
 declare global {
@@ -26,8 +25,8 @@ declare global {
     },
     virtualAPI: {
       connect: (host: string, port: number) => Promise<void>
-      sendAxisInput: (input: IAxisInput) => Promise<void>
-      sendButtonInput: (input: IButtonInput) => Promise<void>
+      send: (message: any) => Promise<void>
+      disconnect: () => Promise<void>
     },
     SDLAPI: {
       connect: (host: string, port: number) => Promise<void>
@@ -77,9 +76,8 @@ contextBridge.exposeInMainWorld('overlay', {
 
 contextBridge.exposeInMainWorld('virtualAPI', {
   connect: (host: string, port: number) => ipcRenderer.invoke('connect', { host, port }),
-  createController: () => ipcRenderer.invoke('create-controller'),
-  sendAxisInput: (input: IAxisInput) => ipcRenderer.invoke('send-axis-input', input),
-  sendButtonInput: (input: IButtonInput) => ipcRenderer.invoke('send-button-input', input)
+  send: (message: any) => ipcRenderer.invoke('send', message),
+  disconnect: () => ipcRenderer.invoke('disconnect')
 })
 
 contextBridge.exposeInMainWorld('SDLAPI', {

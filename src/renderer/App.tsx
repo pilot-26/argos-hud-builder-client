@@ -7,10 +7,10 @@ import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
 import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
-import HOTASInput2Axis1 from './overlay/HOTASInput/HOTASInput2Axis1'
-import HOTASInput3Axis1 from './overlay/HOTASInput/HOTASInput3Axis1'
-import GenericOverlay from './overlay/shared/GenericOverlay'
-import VirtualAxis1 from './overlay/VirtualController/VirtualAxis1'
+import HOTASInput2Axis1 from './instrument/HOTASInput/HOTASInput2Axis1'
+import HOTASInput3Axis1 from './instrument/HOTASInput/HOTASInput3Axis1'
+import GenericOverlay from './overlay/GenericOverlay'
+import VirtualAxis1 from './instrument/VirtualController/VirtualAxis1'
 
 const styles = {
   tab: {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { GLOBAL_STYLE } from '../../style/style'
-import { GLOBAL_COLOR } from '../../style/color'
-import { OverlayStorage } from '../overlayStorage'
-import { IOverlay } from '../data/types'
+import { GLOBAL_STYLE } from '../style/style'
+import { GLOBAL_COLOR } from '../style/color'
+import { OverlayStorage } from './overlayStorage'
+import { IOverlay } from './data/types'
 
 const GenericOverlay: React.FC<{
 	overlayId: string,
@@ -162,22 +162,21 @@ const GenericOverlay: React.FC<{
 					onMouseDown={(e) => {
 						handleMouseDown(e)
 					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
-							color: GLOBAL_COLOR.MINIMUM,
-							textAlign: "center",
-							alignSelf: "center",
-							width: "50%"
-						}}
 					>
-						Left-click to drag, right-click to show menu
+						<div
+							style={{
+								justifyContent: "center",
+								alignItems: "center",
+								color: GLOBAL_COLOR.MINIMUM,
+								textAlign: "center",
+								alignSelf: "center",
+								width: "50%",
+								whiteSpace: "pre-wrap"
+							}}
+						>
+							{`Left-click to drag\nRight-click to show menu\nPin after done setting`}
+						</div>
 					</div>
-				</div>
 			)}
 			{children}
 		</div>

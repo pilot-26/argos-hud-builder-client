@@ -1,11 +1,7 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain } from 'electron'
 import net from "net"
 
-let client = null
-
-function sendToRenderer(channel: string, data: any) {
-
-}
+let client: net.Socket | undefined = undefined
 
 function connectToServer(host: string, port: number) {
   client = net.createConnection({
@@ -16,6 +12,18 @@ function connectToServer(host: string, port: number) {
   })
 }
 
-ipcMain.handle('connect', (event, args) => {
-  connectToServer(args.host, args.port)
+function disconnectFromServer() {
+  client?.end()
+}
+
+ipcMain.handle("connect", (event, option) => {
+  connectToServer(option.host, option.port)
+})
+
+ipcMain.handle("disconnect", (event) => {
+  disconnectFromServer()
+})
+
+ipcMain.handle("send", async (event, message) => {
+  client?.write(JSON.stringify(message))
 })

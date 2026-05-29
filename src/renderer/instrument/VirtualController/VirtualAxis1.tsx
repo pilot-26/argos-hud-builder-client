@@ -40,7 +40,6 @@ const VirtualAxis1: React.FC = () => {
       }}
     >
       <div style={{ width: '400px' }}>
-        <h3 style={{ color: 'white', marginBottom: '10px' }}>Axis Value: {axisValue?.toFixed(2)}</h3>
         <input
           type="range"
           min="-1"

@@ -4,6 +4,8 @@ export interface IInstrumentTemplate {
 	route: string,
 	isInteractable: boolean,
 	fixedAspectRatio?: number,
+	axisCount?: number,
+	buttonCount?: number
 }
 
 export enum EInstrumentType {
