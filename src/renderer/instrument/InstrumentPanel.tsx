@@ -3,68 +3,37 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IInstrumentTemplate, EInstrumentType, IInstrument, IControl } from './data/types'
-import { v4 as uuidv4 } from 'uuid'
+import { IInstrumentTemplate, EInstrumentType, IControl } from './data/types'
 import { INSTRUMENT_CONST } from './const/instrumentConst'
 import InstrumentButton from './InstrumentButton'
-import { OverlayStorage } from '../overlay/overlayStorage'
-import { OVERLAY_CONST } from '../../main/overlay/const/overlayConst'
-import { InstrumentStorage } from './instrumentStorage'
-import { IOverlay } from '../overlay/data/types'
+import { InstrumentStorage } from './util/instrumentStorage'
+import { Instrument } from './data/instrument'
+import { InstrumentOption } from './data/instrumentOption'
+import { OverlayStorage } from '../overlay/util/overlayStorage'
+import { Overlay } from '../overlay/data/overlay'
 
 const InstrumentPanel: React.FC = () => {
   const [showAddModal, setShowAddModal] = React.useState(false)
-  const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<IInstrument[]>([])
+  const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<Instrument[]>([])
 
   const loadInstrument = async () => {
-    const saved = await InstrumentStorage.getInstrumentList()
+    const saved = await InstrumentStorage.list()
     setSelectedInstrumentList(saved)
   }
 
-  const handleInstrumentDelete = (id: string) => {
-    const newList = selectedInstrumentList.filter((item) => item.id !== id)
-    InstrumentStorage.setInstrumentList(newList)
+  const handleInstrumentDelete = async (id: string) => {
+    await InstrumentStorage.remove(id)
     loadInstrument()
   }
 
-  const handleInstrumentAdd = (item: IInstrumentTemplate) => {
-    // save instrument
-    const overlayId = uuidv4()
-    const newInstrument: IInstrument = {
-      ...item,
-      id: uuidv4(),
-      overlayId: overlayId,
-    }
-    if (item.controlTypeList) {
-      const controlList: IControl[] = []
-      for (const each of item.controlTypeList) {
-        controlList.push({
-          id: uuidv4(),
-          type: each
-        })
-      }
-      newInstrument.controlList = controlList
-    }
-    const newList = [...selectedInstrumentList, newInstrument]
-    setSelectedInstrumentList(newList)
-    InstrumentStorage.setInstrumentList(newList)
-
-    // save overlay
-    const newOverlay: IOverlay = {
-      isInteractable: item.isInteractable,
-      id: overlayId,
-      route: item.route,
-
-      isEnabled: false,
-      isPinned: false,
-      isMaximized: false,
-      width: OVERLAY_CONST.DEFAULT_WIDTH,
-      height: OVERLAY_CONST.DEFAULT_HEIGHT,
-      x: OVERLAY_CONST.DEFAULT_POSITION_X,
-      y: OVERLAY_CONST.DEFAULT_POSITION_Y,
-      fixedAspectRatio: item.fixedAspectRatio,
-    }
-    OverlayStorage.setOverlay(newOverlay)
+  const handleInstrumentAdd = async (item: IInstrumentTemplate) => {
+    const newInstrumentOption = new InstrumentOption(item).build()
+    const newOverlay = new Overlay(newInstrumentOption.overlayOption)
+    OverlayStorage.set(newOverlay)
+    
+    const newInstrument = new Instrument(newInstrumentOption)
+    await newInstrument.build()
+    InstrumentStorage.set(newInstrument)
 
     setShowAddModal(false)
   }

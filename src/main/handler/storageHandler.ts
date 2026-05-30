@@ -8,3 +8,11 @@ ipcMain.handle("write", (event, name: string, data: any) => {
 ipcMain.handle("read", (event, name: string) => {
   return FileStorage.readJson<any>(name) || undefined
 })
+
+ipcMain.handle("delete", (event, name: string) => {
+  FileStorage.deleteFile(name)
+})
+
+ipcMain.handle("list", (event, path: string) => {
+  FileStorage.listDirectory(path)
+})

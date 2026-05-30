@@ -1,77 +1,38 @@
 import React, { useEffect, useState } from 'react'
-import { IInstrument } from '../instrument/data/types'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
 import { instrumentPanelStyle } from '../instrument/InstrumentPanelStyle'
-import { OverlayStorage } from '../overlay/overlayStorage'
-import { IOverlay } from '../overlay/data/types'
+import { Instrument } from './data/instrument'
+import { OverlayStorage } from '../overlay/util/overlayStorage'
+import { OverlayOption } from '../overlay/data/overlayOption'
+import { IOverlayOption } from '@shared/overlay-types'
 
 const InstrumentButton: React.FC<{
-	item: IInstrument,
+	item: Instrument,
 	onDelete?: (id: string) => void
 }> = ({
 	item,
 	onDelete
 }) => {
 	const [isHover, setIsHover] = useState(false)
-	const [isEnabled, setIsEnabled] = useState(false)
-	const [isPinned, setIsPinned] = useState(false)
-
-	const saveOverlay = async (overlay: IOverlay) => {
-		OverlayStorage.setOverlay(overlay)
-	}
-
-	const initOverlay = async () => {
-		const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
-		if (!savedOverlay) return
-		console.log("savedOverlay", savedOverlay)
-
-		setIsEnabled(savedOverlay.isEnabled)
-		setIsPinned(savedOverlay.isPinned)
-		if (savedOverlay.isEnabled) {
-			enableOverlay(savedOverlay)
-		}
-	}
-
-	const loadOverlay = async () => {
-		const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
-		if (!savedOverlay) return
-
-		savedOverlay.isEnabled = true
-		saveOverlay(savedOverlay)
-	}
+	const [isOverlayEnabled, setIsOverlayEnabled] = useState(false)
+	const [isOverlayPinned, setIsOverlayPinned] = useState(false)
 
 	useEffect(() => {
 		window.overlay.receive("on-create", (id: string) => {
-			if (id !== item.overlayId) return
-			setIsEnabled(true)
-
-			loadOverlay()
+			if (id !== item.overlayOptionId) return
+			setIsOverlayEnabled(true)
 		})
 
 		window.overlay.receive("on-close", async (id: string) => {
-			console.log("on-close")
-			console.log(id)
-			console.log(item.overlayId)
-			if (id !== item.overlayId) return
-			setIsEnabled(false)
-
-			const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
-			console.log("savedOverlay", savedOverlay)
-			if (!savedOverlay) return
-
-			savedOverlay.isEnabled = false
-			saveOverlay(savedOverlay)
+			if (id !== item.overlayOptionId) return
+			setIsOverlayEnabled(false)
 		})
 
 		window.overlay.receive("on-pin-change", async (id: string, isPinned: boolean) => {
-			if (id !== item.overlayId) return
-			setIsPinned(isPinned)
-			const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
-			if (!savedOverlay) return
-			savedOverlay.isPinned = isPinned
-			saveOverlay(savedOverlay)
+			if (id !== item.overlayOptionId) return
+			setIsOverlayPinned(isPinned)
 		})
 
 		initOverlay()
@@ -81,34 +42,44 @@ const InstrumentButton: React.FC<{
 		onDelete?.(item.id)
 	}
 
-	const enableOverlay = async (overlay: IOverlay) => {
-		setIsEnabled(true)
-		const args: any = {}
+	const getOverlayFromStorage = async () => {
+		return await OverlayStorage.get(item.overlayOptionId)
+	}
+	const initOverlay = async () => {
+		if (!item.isOverlayEnabled) return
+
+		enableOverlay(item.overlayOption)
+	}
+	const enableOverlay = async (overlayOption: IOverlayOption) => {
+		setIsOverlayEnabled(true)
+		const args: any = {
+			templateId: item.templateId
+		}
 		item.controlList?.forEach((each, index) => {
 			args[`controlId${index}`] = each.id
 		})
-		window.overlay.create(overlay, args)
+		window.overlay.create(overlayOption, args)
+	}
+
+	const disableOverlay = () => {
+		setIsOverlayEnabled(false)
+		window.overlay.close(item.overlayOptionId)
 	}
 
 	const handleUserEnableOverlay = async () => {
-		const savedOverlay = await OverlayStorage.getOverlay(item.overlayId)
+		const savedOverlay = await getOverlayFromStorage()
 		if (!savedOverlay) return
 
 		enableOverlay(savedOverlay)
 	}
 
-	const disableOverlay = () => {
-		setIsEnabled(false)
-		window.overlay.close(item.overlayId)
-	}
-
 	const handlePin = (isPinned: boolean) => {
-		setIsPinned(isPinned)
-		window.overlay.pin(item.overlayId, isPinned)
+		setIsOverlayPinned(isPinned)
+		window.overlay.pin(item.overlayOptionId, isPinned)
 	}
 
 	return (<div
-		key={item.name}
+		key={item.template.name}
 		style={{
 			position: 'relative',
 			border: "none",
@@ -138,7 +109,7 @@ const InstrumentButton: React.FC<{
 				justifyContent: "center",
 				alignItems: "center",
 			}}>
-				{isEnabled ? (
+				{isOverlayEnabled ? (
 					<ButtonForMouse
 						style={instrumentPanelStyle.instrumentControlButton}
 						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
@@ -159,7 +130,7 @@ const InstrumentButton: React.FC<{
 						Enable Overlay
 					</ButtonForMouse>
 				)}
-				{isEnabled && isPinned && (
+				{isOverlayEnabled && isOverlayPinned && (
 					<ButtonForMouse
 						style={instrumentPanelStyle.instrumentControlButton}
 						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
@@ -170,7 +141,7 @@ const InstrumentButton: React.FC<{
 						Unpin
 					</ButtonForMouse>
 				)}
-				{isEnabled && !isPinned && (
+				{isOverlayEnabled && !isOverlayPinned && (
 					<ButtonForMouse
 						style={instrumentPanelStyle.instrumentControlButton}
 						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
@@ -181,7 +152,7 @@ const InstrumentButton: React.FC<{
 						Pin
 					</ButtonForMouse>
 				)}
-				{!isEnabled && (<ButtonForMouse
+				{!isOverlayEnabled && (<ButtonForMouse
 					style={instrumentPanelStyle.instrumentControlButton}
 					styleHover={instrumentPanelStyle.instrumentControlButtonHover}
 					onClick={() => {
@@ -192,7 +163,7 @@ const InstrumentButton: React.FC<{
 				</ButtonForMouse>)}
 			</div>
 		)}
-		{item.name}
+		{item.template.name}
 	</div>)
 }
 

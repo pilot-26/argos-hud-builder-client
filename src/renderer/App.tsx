@@ -7,10 +7,6 @@ import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
 import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
-import HOTASInput2Axis1 from './instrument/HOTASInput/HOTASInput2Axis1'
-import HOTASInput3Axis1 from './instrument/HOTASInput/HOTASInput3Axis1'
-import GenericOverlay from './overlay/GenericOverlay'
-import VirtualAxis1 from './instrument/VirtualController/VirtualAxis1'
 
 const styles = {
   tab: {
@@ -55,24 +51,18 @@ const App: React.FC = () => {
   console.log("route = " + route)
   console.log("args = " )
   switch (route) {
-    case INSTRUMENT_CONST.HOTAS_INPUT_2_AXIS_1_ROUTE:
-      return (
-      <GenericOverlay overlayId={argsObject.id}>
-        <HOTASInput2Axis1/>
-      </GenericOverlay>
-    )
-    case INSTRUMENT_CONST.HOTAS_INPUT_3_AXIS_1_ROUTE:
-      return (
-        <GenericOverlay overlayId={argsObject.id}>
-          <HOTASInput3Axis1/>
-        </GenericOverlay>
-      )
-    case INSTRUMENT_CONST.VIRTUAL_AXIS_1_ROUTE:
-      return (
-        <GenericOverlay overlayId={argsObject.id}>
-          <VirtualAxis1 args={argsObject}/>
-        </GenericOverlay>
-      )
+    case INSTRUMENT_CONST.INSTRUMENT_ROUTE:
+      const getInstrumentComponent = (templateId: string) => {
+        for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
+          if (templateId === each.id) {
+            return each.instrumentUI.getLogicElement({
+              args: argsObject,
+              getUIElement: each.instrumentUI.param.getUIElement()
+            })
+          }
+        }
+      }
+      return (getInstrumentComponent(argsObject.templateId))
   }
 
   return (

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
-import { OverlayStorage } from './overlayStorage'
-import { IOverlay } from './data/types'
+import { OverlayStorage } from './util/overlayStorage'
+import { Overlay } from './data/overlay'
 
 const GenericOverlay: React.FC<{
 	overlayId: string,
@@ -11,27 +11,27 @@ const GenericOverlay: React.FC<{
 	overlayId,
 	children
 }) => {
-	const [overlay, setOverlay] = useState<IOverlay | null>(null)
-	const overlayRef = useRef<IOverlay | null>(null)
+	const [overlay, setOverlay] = useState<Overlay | null>(null)
+	const overlayRef = useRef<Overlay | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
 	const [isHover, setIsHover] = useState(false)
 	const [isPinned, setIsPinned] = useState(false)
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-	const debounceSave = (overlayToSave: IOverlay) => {
+	const debounceSave = (overlayToSave: Overlay) => {
 		if (saveTimeoutRef.current) {
 			clearTimeout(saveTimeoutRef.current)
 		}
 		saveTimeoutRef.current = setTimeout(() => {
 			console.log("saved")
 			console.log(overlayToSave)
-			OverlayStorage.setOverlay(overlayToSave)
+			OverlayStorage.set(overlayToSave)
 		}, 200)
 	}
 
 	const loadOverlay = async () => {
-		const savedOverlay = await OverlayStorage.getOverlay(overlayId)
+		const savedOverlay = await OverlayStorage.get(overlayId)
 		if (savedOverlay) {
 			setOverlay(savedOverlay)
 			setIsPinned(savedOverlay.isPinned)
@@ -51,7 +51,7 @@ const GenericOverlay: React.FC<{
 			if (id !== overlayId) return
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
-			const newOverlay = { ...currentOverlay, isPinned }
+			const newOverlay = new Overlay({ ...currentOverlay, isPinned })
 			setOverlay(newOverlay)
 			setIsPinned(isPinned)
 			debounceSave(newOverlay)
@@ -61,17 +61,7 @@ const GenericOverlay: React.FC<{
 			if (id !== overlayId) return
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
-			const newOverlay = { ...currentOverlay, ...size, ...position }
-			setOverlay(newOverlay)
-			debounceSave(newOverlay)
-		})
-
-		window.overlay.receive("on-size-change", (id: string, width: number, height: number) => {
-			if (id !== overlayId) return
-			const currentOverlay = overlayRef.current
-			if (!currentOverlay) return
-
-			const newOverlay = { ...currentOverlay, width, height }
+			const newOverlay = new Overlay({ ...currentOverlay, width: size.width, height: size.height, x: position.x, y: position.y  })
 			setOverlay(newOverlay)
 			debounceSave(newOverlay)
 		})
@@ -80,7 +70,7 @@ const GenericOverlay: React.FC<{
 			if (id !== overlayId) return
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
-			const newOverlay = { ...currentOverlay, isMaximized }
+			const newOverlay = new Overlay({ ...currentOverlay, isMaximized })
 			setOverlay(newOverlay)
 			debounceSave(newOverlay)
 		})
@@ -135,7 +125,8 @@ const GenericOverlay: React.FC<{
 				position: 'absolute',
 				width: '100vw',
 				height: '100vh',
-				backgroundColor: isDragging ? GLOBAL_COLOR.MASK : "transparent",
+				background: isPinned ? "transparent" : GLOBAL_COLOR.MASK,
+				border: isPinned ? "none" : `1px solid ${GLOBAL_COLOR.MINIMUM}`
 			}}
 			onMouseOver={() => {setIsHover(true)}}
 			onMouseOut={() => {setIsHover(false)}}
@@ -150,14 +141,16 @@ const GenericOverlay: React.FC<{
 						position: 'absolute',
 						top: 0,
 						left: 0,
-						width: '100%',
-						height: '100%',
-						backgroundColor: GLOBAL_COLOR.MASK_LIGHT,
+						width: '100vw',
+						height: '100vh',
+						background: GLOBAL_COLOR.MASK_LIGHT,
 						padding: GLOBAL_STYLE.GLOBAL_PADDING,
 
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
+
+						zIndex: 1000,
 					}}
 					onMouseDown={(e) => {
 						handleMouseDown(e)

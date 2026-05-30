@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IOverlayOption } from './overlay/data/types'
+import { IOverlayOption } from '../shared/overlay-types'
 
 declare global {
   const SHOW_CONSOLE = false
@@ -37,6 +37,8 @@ declare global {
     storageAPI: {
       write: (name: string, data: any) => Promise<void>
       read: (name: string) => Promise<any | undefined>
+      delete: (name: string) => Promise<void>
+      list: (path: string) => Promise<string[]>
     }
   }
 }
@@ -56,7 +58,7 @@ contextBridge.exposeInMainWorld('overlay', {
     }
   },
   getActiveList: () => ipcRenderer.invoke('get-active-list'),
-  create: (overlay: IOverlayOption, args?: object) => ipcRenderer.invoke('create', overlay, args),
+  create: (id: string, overlayOption: IOverlayOption, args?: object) => ipcRenderer.invoke('create', id, overlayOption, args),
   close: (id: string) => ipcRenderer.invoke('close', id),
   pin: (id: string, isPinned: boolean) => ipcRenderer.invoke('pin', id, isPinned),
   maximize: (id: string, isMaximized: boolean) => ipcRenderer.invoke('maximize', id, isMaximized),
@@ -81,4 +83,6 @@ contextBridge.exposeInMainWorld('inputAPI', {
 contextBridge.exposeInMainWorld('storageAPI', {
   write: (name: string, data: any) => ipcRenderer.invoke('write', name, data),
   read: (name: string) => ipcRenderer.invoke('read', name),
+  delete: (name: string) => ipcRenderer.invoke('delete', name),
+  list: (path: string) => ipcRenderer.invoke('list', path)
 })

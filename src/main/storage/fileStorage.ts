@@ -53,4 +53,15 @@ export class FileStorage {
       console.error(`Error deleting file ${filename}:`, error)
     }
   }
+
+  static listDirectory(dirName: string): string[] | undefined {
+    try {
+      const dirPath = path.join(FileStorage.getStorageDir(), dirName)
+      fs.accessSync(dirPath)
+      const files = fs.readdirSync(dirPath)
+      return files
+    } catch (error) {
+      console.error(error)
+    }
+  }
 }
