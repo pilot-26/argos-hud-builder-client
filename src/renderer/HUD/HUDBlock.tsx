@@ -3,8 +3,9 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
 import { HUD } from './data/HUD'
-import { OverlayStorage } from '../overlay/util/overlayStorage'
 import { IOverlayOption } from '@shared/overlay-types'
+import { HUDStorage } from './util/HUDStorage'
+import { Overlay } from '../overlay/data/overlay'
 
 const HUDBlock: React.FC<{
 	item: HUD,
@@ -59,13 +60,10 @@ const HUDBlock: React.FC<{
 		onDelete?.(item.id)
 	}
 
-	const getOverlayFromStorage = async () => {
-		return await OverlayStorage.get(item.overlayOptionId)
-	}
 	const initOverlay = async () => {
 		if (!item.isOverlayEnabled) return
 
-		enableOverlay(item.overlayOption)
+		enableOverlay(item.overlay.getOption())
 	}
 	const enableOverlay = async (overlayOption: IOverlayOption) => {
 		setIsOverlayEnabled(true)
@@ -76,18 +74,19 @@ const HUDBlock: React.FC<{
 			args[`controlId${index}`] = each.id
 		})
 		window.overlay.create(overlayOption, args)
+		item.isOverlayEnabled = true
+		HUDStorage.set(item)
 	}
 
 	const disableOverlay = () => {
 		setIsOverlayEnabled(false)
 		window.overlay.close(item.overlayOptionId)
+		item.isOverlayEnabled = false
+		HUDStorage.set(item)
 	}
 
 	const handleUserEnableOverlay = async () => {
-		const savedOverlay = await getOverlayFromStorage()
-		if (!savedOverlay) return
-
-		enableOverlay(savedOverlay)
+		enableOverlay(item.overlay.getOption())
 	}
 
 	const handlePin = (isPinned: boolean) => {

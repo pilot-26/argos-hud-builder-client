@@ -1,10 +1,17 @@
 export interface IOverlayTemplate {
-  route: string,
-  isInteractable?: boolean,
-  width?: number,
-  height?: number,
-  x?: number,
-  y?: number
+  route: string
+  isInteractable?: boolean
+  fixedAspectRatio?: number,
+
+  width: number
+  height: number
+  x: number
+  y: number
+
+  minWidth?: number
+  minHeight?: number
+  maxWidth?: number
+  maxHeight?: number
 }
 
 export interface IOverlayOption extends IOverlayTemplate {
@@ -13,9 +20,4 @@ export interface IOverlayOption extends IOverlayTemplate {
   isMaximized: boolean
   isPinned: boolean
   isInteractable: boolean
-  width: number
-  height: number
-  x: number
-  y: number
-  fixedAspectRatio?: number
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
-import { OverlayStorage } from './util/overlayStorage'
 import { Overlay } from './data/overlay'
 
 const GenericOverlay: React.FC<{
@@ -19,22 +18,30 @@ const GenericOverlay: React.FC<{
 	const [isPinned, setIsPinned] = useState(false)
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-	const debounceSave = (overlayToSave: Overlay) => {
+	const debounceSave = () => {
 		if (saveTimeoutRef.current) {
 			clearTimeout(saveTimeoutRef.current)
 		}
 		saveTimeoutRef.current = setTimeout(() => {
 			console.log("saved")
-			console.log(overlayToSave)
-			OverlayStorage.set(overlayToSave)
+			overlayRef.current?.save()
 		}, 200)
 	}
 
 	const loadOverlay = async () => {
-		const savedOverlay = await OverlayStorage.get(overlayId)
+		const savedOverlay = await Overlay.getFromId(overlayId)
 		if (savedOverlay) {
 			setOverlay(savedOverlay)
 			setIsPinned(savedOverlay.isPinned)
+			window.overlay.pin(overlayId, savedOverlay.isPinned)
+			window.overlay.setSize(overlayId, {
+				width: savedOverlay.width,
+				height: savedOverlay.height,
+			})
+			window.overlay.setPosition(overlayId, {
+				x: savedOverlay.x,
+				y: savedOverlay.y,
+			})
 		}
 	}
 
@@ -52,9 +59,10 @@ const GenericOverlay: React.FC<{
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, isPinned })
+			console.log("saved")
 			setOverlay(newOverlay)
 			setIsPinned(isPinned)
-			debounceSave(newOverlay)
+			debounceSave()
 		})
 
 		window.overlay.receive("on-position-size-change", (id: string, size: {width: number, height: number}, position: {x: number, y: number}) => {
@@ -63,7 +71,7 @@ const GenericOverlay: React.FC<{
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, width: size.width, height: size.height, x: position.x, y: position.y  })
 			setOverlay(newOverlay)
-			debounceSave(newOverlay)
+			debounceSave()
 		})
 
 		window.overlay.receive("on-maximize-change", (id: string, isMaximized: boolean) => {
@@ -72,9 +80,9 @@ const GenericOverlay: React.FC<{
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, isMaximized })
 			setOverlay(newOverlay)
-			debounceSave(newOverlay)
+			debounceSave()
 		})
-	}, [overlayId])
+	}, [])
 
 	useEffect(() => {
 		const handleMouseMove = async (e: MouseEvent) => {
@@ -126,7 +134,8 @@ const GenericOverlay: React.FC<{
 				width: '100vw',
 				height: '100vh',
 				background: isPinned ? "transparent" : GLOBAL_COLOR.MASK,
-				border: isPinned ? "none" : `1px solid ${GLOBAL_COLOR.MINIMUM}`
+				border: isPinned ? "1px solid transparent" : `1px solid ${GLOBAL_COLOR.MINIMUM}`,
+				boxSizing: 'border-box'
 			}}
 			onMouseOver={() => {setIsHover(true)}}
 			onMouseOut={() => {setIsHover(false)}}

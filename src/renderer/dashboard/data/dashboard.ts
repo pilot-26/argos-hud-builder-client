@@ -1,29 +1,29 @@
 import { IControl, IInstrumentTemplate } from "../../instrument/types"
-import { IOverlayOption } from "@shared/overlay-types"
-import { IHUDOption } from "../types"
+import { IDashboardOption } from "../types"
 import { INSTRUMENT_CONST } from "../../instrument/const"
-import { Overlay } from "../../overlay/data/overlay"
-import { HUDStorage } from "../util/HUDStorage"
+import { Embedded } from "../../embedded/data/embedded"
+import { IEmbeddedOption } from "../../embedded/types"
+import { DashboardStorage } from "../util/dashboardStorage"
 
 /**
  * For filling up the blanks after getting serialized HUD option from storage
  */
-export class HUD implements IHUDOption {
+export class Dashboard implements IDashboardOption {
   id: string
-  isOverlayEnabled: boolean
+  isEmbeddedLocked: boolean
   controlList?: IControl[] | undefined
 
   templateId: string
-  overlayOptionId: string
+  embeddedOptionId: string
 
   template!: IInstrumentTemplate
-  overlay!: Overlay
+  embedded!: Embedded
 
-  constructor (param: IHUDOption) {
+  constructor (param: IDashboardOption) {
     this.id = param.id
+    this.isEmbeddedLocked = param.isEmbeddedLocked
     this.templateId = param.templateId
-    this.overlayOptionId = param.overlayOptionId
-    this.isOverlayEnabled = param.isOverlayEnabled
+    this.embeddedOptionId = param.embeddedOptionId
     this.controlList = param.controlList
     let found = false
     for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
@@ -38,27 +38,24 @@ export class HUD implements IHUDOption {
     }
   }
 
-  async build(): Promise<HUD> {
-    const overlay = await Overlay.getFromId(this.overlayOptionId)
-    if (!overlay) {
-      throw new Error("OVERLAY NOT FOUND")
-    }
-    this.overlay = overlay
+  async build(): Promise<Dashboard> {
+    const embedded = await Embedded.getFromId(this.embeddedOptionId)
+    if (!embedded) throw new Error()
+    this.embedded = embedded
     return this
   }
 
-  getOption(): IHUDOption {
+  getOption(): IDashboardOption {
     return {
       id: this.id,
-      isOverlayEnabled: this.isOverlayEnabled,
+      isEmbeddedLocked: this.isEmbeddedLocked,
       controlList: this.controlList,
       templateId: this.templateId,
-      overlayOptionId: this.overlayOptionId
+      embeddedOptionId: this.embeddedOptionId
     }
   }
 
   async save() {
-    await this.overlay.save()
-    await HUDStorage.set(this)
+    await DashboardStorage.set(this)
   }
 }

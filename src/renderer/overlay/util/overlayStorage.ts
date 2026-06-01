@@ -3,6 +3,9 @@ import { Overlay } from "../data/overlay"
 
 export class OverlayStorage {
 	static readonly OVERLAY_DIR = 'Overlays'
+	static async setOption(overlayOption: IOverlayOption) {
+		await window.storage.write(`${this.OVERLAY_DIR}/${overlayOption.id}.json`, overlayOption)
+	}
 	static async set(overlay: Overlay) {
 		const option = overlay.getOption()
 		await window.storage.write(`${this.OVERLAY_DIR}/${option.id}.json`, option)
@@ -10,7 +13,7 @@ export class OverlayStorage {
 	static async get(id: string): Promise<Overlay | undefined> {
 		try {
 			const option = await window.storage.read(`${this.OVERLAY_DIR}/${id}.json`) as IOverlayOption
-			const overlay = new Overlay(option).build()
+			const overlay = new Overlay(option)
 			return overlay
 		} catch (error) {
 			console.error("Error getting overlay:", error)

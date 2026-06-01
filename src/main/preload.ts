@@ -20,6 +20,7 @@ declare global {
       maximize: (id: string, isMaximized: boolean) => Promise<void>
       getPosition: (id: string) => Promise<{ x: number; y: number } | undefined>
       setPosition: (id: string, position: { x: number; y: number }) => Promise<void>
+      setSize: (id: string, size: { width: number; height: number }) => Promise<void>
       showContextMenu: (id: string) => Promise<void>
     },
     virtualAPI: {
@@ -62,6 +63,7 @@ contextBridge.exposeInMainWorld('overlay', {
   maximize: (id: string, isMaximized: boolean) => ipcRenderer.invoke('maximize', id, isMaximized),
   getPosition: (id: string) => ipcRenderer.invoke('get-position', id),
   setPosition: (id: string, position: { x: number; y: number }) => ipcRenderer.invoke('set-position', id, position),
+  setSize: (id: string, size: { width: number; height: number }) => ipcRenderer.invoke('set-size', id, size),
   showContextMenu: (id: string) => ipcRenderer.send("show-context-menu", id)
 })
 

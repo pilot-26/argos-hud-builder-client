@@ -12,5 +12,5 @@ export const GLOBAL_COLOR = {
     TRANSPARENT: 'transparent',
     MASK: 'rgba(0, 0, 0, 0.8)',
     MASK_LIGHT: 'rgba(0, 0, 0, 0.6)',
-    CAUTION: '#E04242FF',
+    CAUTION: '#e75656ff',
    }

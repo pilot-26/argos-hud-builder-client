@@ -3,7 +3,11 @@ import { IControl, IInstrumentTemplate } from "../../instrument/types"
 import { IHUDOption } from "../types"
 import { OverlayOption } from '../../overlay/data/overlayOption'
 import { IOverlayTemplate } from '@shared/overlay-types'
+import { HUDStorage } from '../util/HUDStorage'
 
+/**
+ * For making a new HUD option from the template
+ */
 export class HUDOption implements IHUDOption {
   id: string
   isOverlayEnabled: boolean
@@ -11,7 +15,7 @@ export class HUDOption implements IHUDOption {
   templateId: string
 
   overlayTemplate: IOverlayTemplate
-  overlayOptionId: string = ""
+  overlayOptionId!: string
   overlayOption: OverlayOption
 
   constructor(pInstrumentTemplate: IInstrumentTemplate) {
@@ -29,11 +33,12 @@ export class HUDOption implements IHUDOption {
     this.templateId = pInstrumentTemplate.id
     this.overlayTemplate = pInstrumentTemplate.overlayTemplate
     this.overlayOption = new OverlayOption(pInstrumentTemplate.overlayTemplate)
+    this.overlayOptionId = this.overlayOption.id
   }
 
-  build(): HUDOption {
-    this.overlayOption.build()
-    this.overlayOptionId = this.overlayOption.id
+  async create(): Promise<HUDOption> {
+    await this.overlayOption.create()
+    await HUDStorage.setOption(this)
     return this
   }
 }

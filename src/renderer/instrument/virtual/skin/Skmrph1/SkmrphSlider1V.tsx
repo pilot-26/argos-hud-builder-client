@@ -1,4 +1,4 @@
-import { GLOBAL_STYLE } from "../../../style/style"
+import { GLOBAL_STYLE } from "../../../../style/style"
 import { SKMRPH1_STYLES } from "./Styles"
 
 export const getSkmrphSlider1V = (

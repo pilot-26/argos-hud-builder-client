@@ -2,7 +2,10 @@ import { HUD } from "../data/HUD"
 import { IHUDOption } from "../types"
 
 export class HUDStorage {
-	static readonly INSTRUMENT_DIR = 'Instruments'
+	static readonly INSTRUMENT_DIR = 'HUDs'
+	static async setOption(hudOption: IHUDOption) {
+		await window.storage.write(`${this.INSTRUMENT_DIR}/${hudOption.id}.json`, hudOption)
+	}
 	static async set(hud: HUD) {
 		const option = hud.getOption()
 		await window.storage.write(`${this.INSTRUMENT_DIR}/${option.id}.json`, option)

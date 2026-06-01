@@ -1,5 +1,6 @@
 import { JSX } from "react"
 import { IOverlayTemplate } from "@shared/overlay-types"
+import { IEmbeddedTemplate } from "../embedded/types"
 
 export enum EControlType {
 	AXIS = "AXIS",
@@ -40,4 +41,5 @@ export interface IInstrumentTemplate {
 	controlTypeList?: EControlType[]
 
 	overlayTemplate: IOverlayTemplate
+	embeddedTemplate: IEmbeddedTemplate
 }

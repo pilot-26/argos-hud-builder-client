@@ -12,14 +12,15 @@ export class FileStorage {
     return storageDir
   }
 
-  private static ensureDirectory(filePath: string): void {
-    const dir = path.dirname(filePath)
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true })
+  private static ensureDirectory(dirPath: string, isDirectory: boolean = false): void {
+    const targetDir = isDirectory ? dirPath : path.dirname(dirPath)
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
     }
   }
 
   static readJson<T>(filename: string): T | null {
+    console.log("Reading JSON file:", filename)
     try {
       const filePath = path.join(FileStorage.getStorageDir(), filename)
       if (!fs.existsSync(filePath)) {
@@ -34,6 +35,7 @@ export class FileStorage {
   }
 
   static writeJson<T>(filename: string, data: T): void {
+    console.log("Writing JSON file:", filename)
     try {
       const filePath = path.join(FileStorage.getStorageDir(), filename)
       FileStorage.ensureDirectory(filePath)
@@ -44,6 +46,7 @@ export class FileStorage {
   }
 
   static deleteFile(filename: string): void {
+    console.log("Deleting file:", filename)
     try {
       const filePath = path.join(FileStorage.getStorageDir(), filename)
       if (fs.existsSync(filePath)) {
@@ -55,8 +58,10 @@ export class FileStorage {
   }
 
   static listDirectory(dirName: string): string[] | undefined {
+    console.log("Listing directory:", dirName)
     try {
       const dirPath = path.join(FileStorage.getStorageDir(), dirName)
+      FileStorage.ensureDirectory(dirPath, true)
       fs.accessSync(dirPath)
       const files = fs.readdirSync(dirPath)
       return files

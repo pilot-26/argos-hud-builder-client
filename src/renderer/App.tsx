@@ -142,8 +142,9 @@ const App: React.FC = () => {
       </div>
       <div 
         style={{
-          height: '100%',
-          overflowY: 'auto'
+        flex: 1,
+        position: 'relative',
+        overflow: 'hidden'
         }}
       >
         {activeTab === 'dashboard' && <DashboardTab />}
