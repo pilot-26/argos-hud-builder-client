@@ -7,6 +7,7 @@ import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
 import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
+import GenericOverlay from './overlay/GenericOverlay'
 
 const styles = {
   tab: {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const checkHash = () => {
       const hash = window.location.hash
+      console.log("hash = " + hash)
       if (hash.includes("#/")) {
         const route = hash.split('/')[1].split('?')[0]
         const argStr = hash.split('?')[1]
@@ -49,7 +51,7 @@ const App: React.FC = () => {
   }, [])
 
   console.log("route = " + route)
-  console.log("args = " )
+  console.log("args = " + JSON.stringify(argsObject))
   switch (route) {
     case INSTRUMENT_CONST.INSTRUMENT_ROUTE:
       const getInstrumentComponent = (templateId: string) => {
@@ -57,12 +59,18 @@ const App: React.FC = () => {
           if (templateId === each.id) {
             return each.instrumentUI.getLogicElement({
               args: argsObject,
-              getUIElement: each.instrumentUI.param.getUIElement()
+              getUIElement: each.instrumentUI.param.getUIElement
             })
           }
         }
       }
-      return (getInstrumentComponent(argsObject.templateId))
+      return (
+        <GenericOverlay
+          overlayId={argsObject.id}
+        >
+          {getInstrumentComponent(argsObject.templateId)}
+        </GenericOverlay>
+      )
   }
 
   return (

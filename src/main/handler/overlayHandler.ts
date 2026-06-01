@@ -35,13 +35,12 @@ const onMaximizeChange = (browserWindow: BrowserWindow, id: string, isMaximized:
 
 ipcMain.handle('create', (
   event,
-  id: string,
   overlayOption: IOverlayOption,
   args?: object
 ) => {
   console.log(overlayOption)
 
-  if (WindowManager.windowMap.has(id)) return
+  if (WindowManager.windowMap.has(overlayOption.id)) return
   const browserWindow = new BrowserWindow({
     width: overlayOption.width,
     height: overlayOption.height,
@@ -70,7 +69,7 @@ ipcMain.handle('create', (
   if (overlayOption.fixedAspectRatio) {
     browserWindow.setAspectRatio(overlayOption.fixedAspectRatio)
   }
-  setMaximize(id, browserWindow, overlayOption.isMaximized, overlayOption)
+  setMaximize(overlayOption.id, browserWindow, overlayOption.isMaximized, overlayOption)
 
   let additionalArgs = ""
   if (args) {
@@ -81,54 +80,50 @@ ipcMain.handle('create', (
   }
 
   if (isDev) {
-    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?id=${id}${additionalArgs}`)
+    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}`)
   } else {
-    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?id=${id}${additionalArgs}` })
+    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}` })
   }
 
   browserWindow.on('move', () => {
     const [width, height] = browserWindow.getSize()
     const [x, y] = browserWindow.getPosition()
-    const currentOption = optionMap.get(id)
+    const currentOption = optionMap.get(overlayOption.id)
     if (currentOption) {
       if (currentOption.isMaximized) return
-      optionMap.set(id, { ...currentOption, width, height, x, y })
-      onSizePositionChange(browserWindow, id, {width, height}, { x, y })
+      optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
+      onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
     }
   })
 
   browserWindow.on("resize", () => {
     const [width, height] = browserWindow.getSize()
     const [x, y] = browserWindow.getPosition()
-    const currentOption = optionMap.get(id)
+    const currentOption = optionMap.get(overlayOption.id)
     if (currentOption) {
       if (currentOption.isMaximized) return
-      optionMap.set(id, { ...currentOption, width, height, x, y })
-      onSizePositionChange(browserWindow, id, {width, height}, { x, y })
+      optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
+      onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
     }
   })
 
   browserWindow.on('close', () => {
-    onClose(browserWindow, id)
-    WindowManager.windowMap.delete(id)
-    optionMap.delete(id)
+    onClose(browserWindow, overlayOption.id)
+    WindowManager.windowMap.delete(overlayOption.id)
+    optionMap.delete(overlayOption.id)
   })
 
   browserWindow.show()
 
-  onCreate(browserWindow, id)
+  onCreate(browserWindow, overlayOption.id)
 
-  WindowManager.windowMap.set(id, browserWindow)
-  optionMap.set(id, overlayOption)
-  console.log("created: " + id)
+  WindowManager.windowMap.set(overlayOption.id, browserWindow)
+  optionMap.set(overlayOption.id, overlayOption)
+  console.log("created: " + overlayOption.id)
 
   if (MAIN_CONST.SHOW_CONSOLE) {
     browserWindow.webContents.openDevTools()
   }
-})
-
-ipcMain.handle('get-active-list', () => {
-  return Array.from(WindowManager.windowMap.keys())
 })
 
 const close = (id: string) => {

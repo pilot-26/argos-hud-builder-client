@@ -14,5 +14,5 @@ ipcMain.handle("delete", (event, name: string) => {
 })
 
 ipcMain.handle("list", (event, path: string) => {
-  FileStorage.listDirectory(path)
+  return FileStorage.listDirectory(path) || []
 })

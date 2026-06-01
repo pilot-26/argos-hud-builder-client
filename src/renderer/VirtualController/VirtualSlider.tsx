@@ -6,7 +6,12 @@ import { ILogicElementParam } from '../instrument/data/types'
 export interface IVirtualSliderParam extends ILogicElementParam {
   args: any,
   isDummy: boolean,
-  getUIElement: (isTooLow: boolean, normalizedValue: number, axisValue: number, setAxisValue: Dispatch<SetStateAction<number>>) => JSX.Element
+  getUIElement: (
+    isTooLow: boolean,
+    normalizedValue: number,
+    axisValue: number,
+    setAxisValue: Dispatch<SetStateAction<number>>
+  ) => JSX.Element
 }
 
 export class VirtualSlider {

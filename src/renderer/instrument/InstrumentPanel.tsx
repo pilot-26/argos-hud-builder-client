@@ -35,6 +35,8 @@ const InstrumentPanel: React.FC = () => {
     await newInstrument.build()
     InstrumentStorage.set(newInstrument)
 
+    loadInstrument()
+
     setShowAddModal(false)
   }
 

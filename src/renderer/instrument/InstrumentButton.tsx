@@ -5,7 +5,6 @@ import ButtonForMouse from '../components/ButtonForMouse'
 import { instrumentPanelStyle } from '../instrument/InstrumentPanelStyle'
 import { Instrument } from './data/instrument'
 import { OverlayStorage } from '../overlay/util/overlayStorage'
-import { OverlayOption } from '../overlay/data/overlayOption'
 import { IOverlayOption } from '@shared/overlay-types'
 
 const InstrumentButton: React.FC<{

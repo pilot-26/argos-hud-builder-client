@@ -14,7 +14,6 @@ declare global {
     },
     overlay: {
       receive: (channel: string, func: (...args: any[]) => void) => void
-      getActiveList: () => Promise<string[]>
       create: (overlay: IOverlayOption, args?: object) => Promise<void>
       close: (id: string) => Promise<void>
       pin: (id: string, isPinned: boolean) => Promise<void>
@@ -34,7 +33,7 @@ declare global {
       sendAndReceive: (message: any) => Promise<string | undefined>
       disconnect: () => Promise<void>
     },
-    storageAPI: {
+    storage: {
       write: (name: string, data: any) => Promise<void>
       read: (name: string) => Promise<any | undefined>
       delete: (name: string) => Promise<void>
@@ -57,7 +56,6 @@ contextBridge.exposeInMainWorld('overlay', {
       ipcRenderer.on(channel, (event, ...args) => func(...args))
     }
   },
-  getActiveList: () => ipcRenderer.invoke('get-active-list'),
   create: (id: string, overlayOption: IOverlayOption, args?: object) => ipcRenderer.invoke('create', id, overlayOption, args),
   close: (id: string) => ipcRenderer.invoke('close', id),
   pin: (id: string, isPinned: boolean) => ipcRenderer.invoke('pin', id, isPinned),
@@ -80,7 +78,7 @@ contextBridge.exposeInMainWorld('inputAPI', {
   disconnect: () => ipcRenderer.invoke('input-api-disconnect')
 })
 
-contextBridge.exposeInMainWorld('storageAPI', {
+contextBridge.exposeInMainWorld('storage', {
   write: (name: string, data: any) => ipcRenderer.invoke('write', name, data),
   read: (name: string) => ipcRenderer.invoke('read', name),
   delete: (name: string) => ipcRenderer.invoke('delete', name),
