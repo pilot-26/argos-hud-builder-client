@@ -1,38 +1,38 @@
-import { Instrument } from "../data/instrument"
-import { IInstrumentOption } from "../data/types"
+import { HUD } from "../data/HUD"
+import { IHUDOption } from "../types"
 
-export class InstrumentStorage {
+export class HUDStorage {
 	static readonly INSTRUMENT_DIR = 'Instruments'
-	static async set(instrument: Instrument) {
-		const option = instrument.getOption()
+	static async set(hud: HUD) {
+		const option = hud.getOption()
 		await window.storage.write(`${this.INSTRUMENT_DIR}/${option.id}.json`, option)
 	}
-	static async get(id: string): Promise<Instrument | undefined> {
+	static async get(id: string): Promise<HUD | undefined> {
 		try {
-			const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${id}.json`) as IInstrumentOption
-			const overlay = await new Instrument(option).build()
+			const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${id}.json`) as IHUDOption
+			const overlay = await new HUD(option).build()
 			return overlay
 		} catch (error) {
 			console.error("Error getting overlay:", error)
 			return undefined
 		}
 	}
-	static async list(): Promise<Instrument[]> {
+	static async list(): Promise<HUD[]> {
 		try {
 			const files = await window.storage.list(this.INSTRUMENT_DIR) || []
-			const instrumentList = []
+			const list = []
 			console.log(files)
 			for (const each of files) {
 				console.log(each)
 				const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${each}`)
 				console.log(option)
-				const instrument = await new Instrument(option).build()
-				instrumentList.push(instrument)
+				const hud = await new HUD(option).build()
+				list.push(hud)
 			}
 
-			return instrumentList
+			return list
 		} catch (error) {
-			console.error("Error listing instruments:", error)
+			console.error("Error listing HUD:", error)
 			return []
 		}
 	}

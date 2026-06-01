@@ -1,6 +1,7 @@
-import { SkmrphSlider1H } from "../../VirtualController/skin/SkmrphSlider1H"
-import { VirtualSlider } from "../../VirtualController/VirtualSlider"
-import { EControlType, EInstrumentType, IInstrumentTemplate } from "../data/types"
+import { getSkmrphSlider1H } from "./virtual/skin/Skmrph1/SkmrphSlider1H"
+import { getSkmrphSlider1V } from "./virtual/skin/Skmrph1/SkmrphSlider1V"
+import { getVirtualSlider, VirtualSlider } from "./virtual/VirtualSlider"
+import { EControlType, IInstrumentTemplate } from "./types"
 
 export class INSTRUMENT_CONST {
     static readonly INSTRUMENT_ROUTE = "INSTRUMENT"
@@ -9,11 +10,9 @@ export class INSTRUMENT_CONST {
       {
         id: "RETRO_VIRTUAL_AXIS_1_HORIZONTAL",
         name: "Retro Virtual Axis 1 Horizontal",
-        instrumentUI: {
-          getLogicElement: VirtualSlider.getLogicElement,
-          param: {
-            getUIElement: SkmrphSlider1H.getUIElement,
-          }
+        instrumentComponent: {
+          getLogicElement: getVirtualSlider,
+          getUIElement: getSkmrphSlider1H,
         },
         overlayTemplate: {
           route: INSTRUMENT_CONST.INSTRUMENT_ROUTE,
@@ -26,11 +25,9 @@ export class INSTRUMENT_CONST {
       {
         id: "RETRO_VIRTUAL_AXIS_1_VERTICLE",
         name: "Retro Virtual Axis 1 Verticle",
-        instrumentUI: {
-          getLogicElement: VirtualSlider.getLogicElement,
-          param: {
-            getUIElement: SkmrphSlider1H.getUIElement,
-          }
+        instrumentComponent: {
+          getLogicElement: getVirtualSlider,
+          getUIElement: getSkmrphSlider1V,
         },
         overlayTemplate: {
           route: INSTRUMENT_CONST.INSTRUMENT_ROUTE,

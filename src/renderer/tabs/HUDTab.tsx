@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IInstrumentTemplate, EInstrumentType, IControl } from './data/types'
-import { INSTRUMENT_CONST } from './const/instrumentConst'
-import InstrumentButton from './InstrumentButton'
-import { InstrumentStorage } from './util/instrumentStorage'
-import { Instrument } from './data/instrument'
-import { InstrumentOption } from './data/instrumentOption'
+import { IInstrumentTemplate, } from '../instrument/types'
+import { INSTRUMENT_CONST } from '../instrument/const'
+import HUDBlock from '../HUD/HUDBlock'
+import { HUDStorage } from '../HUD/util/HUDStorage'
+import { HUD } from '../HUD/data/HUD'
+import { HUDOption } from '../HUD/data/HUDOption'
 import { OverlayStorage } from '../overlay/util/overlayStorage'
 import { Overlay } from '../overlay/data/overlay'
 
-const InstrumentPanel: React.FC = () => {
+const HUDTab: React.FC = () => {
   const [showAddModal, setShowAddModal] = React.useState(false)
-  const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<Instrument[]>([])
+  const [selectedHUDList, setSelectedHUDList] = React.useState<HUD[]>([])
 
   const loadInstrument = async () => {
-    const saved = await InstrumentStorage.list()
-    setSelectedInstrumentList(saved)
+    const saved = await HUDStorage.list()
+    setSelectedHUDList(saved)
   }
 
-  const handleInstrumentDelete = async (id: string) => {
-    await InstrumentStorage.remove(id)
+  const handleHUDDelete = async (id: string) => {
+    await HUDStorage.remove(id)
     loadInstrument()
   }
 
   const handleInstrumentAdd = async (item: IInstrumentTemplate) => {
-    const newInstrumentOption = new InstrumentOption(item).build()
+    const newInstrumentOption = new HUDOption(item).build()
     const newOverlay = new Overlay(newInstrumentOption.overlayOption)
     OverlayStorage.set(newOverlay)
     
-    const newInstrument = new Instrument(newInstrumentOption)
+    const newInstrument = new HUD(newInstrumentOption)
     await newInstrument.build()
-    InstrumentStorage.set(newInstrument)
+    HUDStorage.set(newInstrument)
 
     loadInstrument()
 
@@ -62,11 +62,11 @@ const InstrumentPanel: React.FC = () => {
         gridGap: GLOBAL_STYLE.GLOBAL_GAP,
         gap: GLOBAL_STYLE.GLOBAL_GAP,
       }}>
-        {selectedInstrumentList.map((item) => (
-          <InstrumentButton
+        {selectedHUDList.map((item) => (
+          <HUDBlock
             key={item.id}
             item={item}
-            onDelete={handleInstrumentDelete}
+            onDelete={handleHUDDelete}
           />
         ))}
       </div>
@@ -139,4 +139,4 @@ const InstrumentPanel: React.FC = () => {
   )
 }
 
-export default InstrumentPanel
+export default HUDTab

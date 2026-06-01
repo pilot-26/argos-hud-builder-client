@@ -1,51 +1,53 @@
 import React, { Dispatch, JSX, SetStateAction, useEffect, useState } from 'react'
-import { VIRTUAL_CONST } from '../../main/virtual/virtualConst'
-import { EVCommandType, EVControlType, IVCommandMessage } from '../../main/virtual/types'
-import { ILogicElementParam } from '../instrument/data/types'
+import { EVCommandType, EVControlType, IVCommandMessage } from '../../../main/virtual/types'
 
-export interface IVirtualSliderParam extends ILogicElementParam {
-  args: any,
-  isDummy: boolean,
+export const getVirtualSlider = (args: {
+  params: any,
+  getUIElement: (
+    isTooLow: boolean,
+    normalizedValue: number,
+    axisValue: number,
+    setAxisValue: Dispatch<SetStateAction<number>>,
+  ) => JSX.Element
+}) => {
+  return (
+    <VirtualSlider
+      params={args.params}
+      getUIElement={args.getUIElement}
+    />
+  )
+}
+
+export const VirtualSlider: React.FC<{
+  params: any,
   getUIElement: (
     isTooLow: boolean,
     normalizedValue: number,
     axisValue: number,
     setAxisValue: Dispatch<SetStateAction<number>>
   ) => JSX.Element
-}
-
-export class VirtualSlider {
-  static getLogicElement(param: IVirtualSliderParam) {
-    return (
-      <VirtualSliderComponent
-        args={param.args}
-        isDummy={param.isDummy}
-        getUIElement={param.getUIElement}
-      />
-    )
-  }
-}
-
-const VirtualSliderComponent: React.FC<IVirtualSliderParam> = ({
-  args,
-  isDummy = false,
+}> = ({
+  params,
   getUIElement
 }) => {
-  const [axisId] = useState<string>(args.controlId0)
+  const [isDummy, setIsDummy] = useState<boolean>(Boolean(params.isDummy) || false)
+  const [axisId] = useState<string>(params.controlId0)
   const [axisValue, setAxisValue] = useState<number>(0)
 
   useEffect(() => {
     if (isDummy) return
+
     initController()
   }, [])
   useEffect(() => {
     if (isDummy) return
+
     sendInput()
   }, [axisValue])
 
   const initController = async () => {
     try {
-      await window.virtualAPI.connect("127.0.0.1", VIRTUAL_CONST.DEFAULT_PORT)
+      await window.virtualAPI.connect()
       const message: IVCommandMessage = {
         VCommandType: EVCommandType.REGISTER,
         VControlId: axisId,

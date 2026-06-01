@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import './App.scss'
-import InstrumentPanel from './instrument/InstrumentPanel'
-import Settings from './setting/Settings'
+import SettingsTab from './tabs/SettingsTab'
 import TitleBar from './components/TitleBar'
 import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
-import { INSTRUMENT_CONST } from './instrument/const/instrumentConst'
 import GenericOverlay from './overlay/GenericOverlay'
+import { INSTRUMENT_CONST } from './instrument/const'
+import HUDTab from './tabs/HUDTab'
+import DashboardTab from './tabs/DashboardTab'
 
 const styles = {
   tab: {
@@ -22,9 +23,9 @@ const styles = {
 }
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'instrument' | 'settings'>('instrument')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'hud' | 'settings'>('dashboard')
   const [route, setRoute] = useState<string>("")
-  const [argsObject, setArgsObject] = useState<any>({})
+  const [ParamObject, setParamObject] = useState<any>({})
 
   useEffect(() => {
     const checkHash = () => {
@@ -32,14 +33,14 @@ const App: React.FC = () => {
       console.log("hash = " + hash)
       if (hash.includes("#/")) {
         const route = hash.split('/')[1].split('?')[0]
-        const argStr = hash.split('?')[1]
-        const args = argStr ? argStr.split("&") : []
-        const newArgsObject: any = {}
-        for (const each of args) {
+        const paramStr = hash.split('?')[1]
+        const paramList = paramStr ? paramStr.split("&") : []
+        const newParamObject: any = {}
+        for (const each of paramList) {
           const split = each.split("=")
-          newArgsObject[split[0]] = split[1]
+          newParamObject[split[0]] = split[1]
         }
-        setArgsObject(newArgsObject)
+        setParamObject(newParamObject)
         setRoute(route)
       } else {
         setRoute("")
@@ -51,24 +52,24 @@ const App: React.FC = () => {
   }, [])
 
   console.log("route = " + route)
-  console.log("args = " + JSON.stringify(argsObject))
+  console.log("args = " + JSON.stringify(ParamObject))
   switch (route) {
     case INSTRUMENT_CONST.INSTRUMENT_ROUTE:
       const getInstrumentComponent = (templateId: string) => {
         for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
           if (templateId === each.id) {
-            return each.instrumentUI.getLogicElement({
-              args: argsObject,
-              getUIElement: each.instrumentUI.param.getUIElement
+            return each.instrumentComponent.getLogicElement({
+              params: ParamObject,
+              getUIElement: each.instrumentComponent.getUIElement
             })
           }
         }
       }
       return (
         <GenericOverlay
-          overlayId={argsObject.id}
+          overlayId={ParamObject.id}
         >
-          {getInstrumentComponent(argsObject.templateId)}
+          {getInstrumentComponent(ParamObject.templateId)}
         </GenericOverlay>
       )
   }
@@ -99,10 +100,27 @@ const App: React.FC = () => {
           styleOn={{
             borderBottom: `3px solid ${GLOBAL_COLOR.BRAND}`
           }}
-          pIsOn={activeTab === 'instrument'}
-          onClick={() => setActiveTab('instrument')}
+          pIsOn={activeTab === 'dashboard'}
+          onClick={() => setActiveTab('dashboard')}
         >
-          Instrument Panel
+          Dashboard
+        </ButtonForMouse>
+        <ButtonForMouse
+          style={{
+            ...styles.tab,
+            color: GLOBAL_COLOR.PRIMARY,
+            borderBottom: `3px solid ${GLOBAL_COLOR.TRANSPARENT}`
+          }}
+          styleHover={{
+            backgroundColor: GLOBAL_COLOR.BRAND_LITE,
+          }}
+          styleOn={{
+            borderBottom: `3px solid ${GLOBAL_COLOR.BRAND}`
+          }}
+          pIsOn={activeTab === 'hud'}
+          onClick={() => setActiveTab('hud')}
+        >
+          HUD
         </ButtonForMouse>
         <ButtonForMouse
           style={{
@@ -128,8 +146,9 @@ const App: React.FC = () => {
           overflowY: 'auto'
         }}
       >
-        {activeTab === 'instrument' && <InstrumentPanel />}
-        {activeTab === 'settings' && <Settings />}
+        {activeTab === 'dashboard' && <DashboardTab />}
+        {activeTab === 'hud' && <HUDTab />}
+        {activeTab === 'settings' && <SettingsTab />}
       </div>
     </div>
   )

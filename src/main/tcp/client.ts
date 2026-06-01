@@ -1,5 +1,5 @@
 import net from "net"
-import { TCP_CONST } from "./tcpConst"
+import { TCP_CONST } from "./const"
 export class TCPClient {
   client: net.Socket | undefined = undefined
   host: string

@@ -1,13 +1,14 @@
 import { ipcMain } from 'electron'
 import { TCPClient } from '../tcp/client'
+import { INPUT_CONST } from '../input/const'
 
 let mTCPClient: TCPClient | undefined = undefined
-ipcMain.handle("input-api-connect", async (event, option) => {
+ipcMain.handle("input-api-connect", async (event) => {
   if (mTCPClient) {
     await mTCPClient.disconnect()
     mTCPClient = undefined
   }
-  mTCPClient = new TCPClient(option.host, option.port)
+  mTCPClient = new TCPClient(INPUT_CONST.DEFAULT_HOST, INPUT_CONST.DEFAULT_PORT)
   await mTCPClient.connect()
 })
 

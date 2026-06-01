@@ -1,4 +1,4 @@
-import { OVERLAY_CONST } from '../const/overlayConst'
+import { OVERLAY_CONST } from '../const'
 import { IOverlayOption, IOverlayTemplate } from '@shared/overlay-types'
 import { v4 as uuidv4 } from 'uuid'
 

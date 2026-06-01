@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { instrumentPanelStyle } from '../instrument/InstrumentPanelStyle'
-import { Instrument } from './data/instrument'
+import { HUD } from './data/HUD'
 import { OverlayStorage } from '../overlay/util/overlayStorage'
 import { IOverlayOption } from '@shared/overlay-types'
 
-const InstrumentButton: React.FC<{
-	item: Instrument,
+const HUDBlock: React.FC<{
+	item: HUD,
 	onDelete?: (id: string) => void
 }> = ({
 	item,
@@ -17,6 +16,25 @@ const InstrumentButton: React.FC<{
 	const [isHover, setIsHover] = useState(false)
 	const [isOverlayEnabled, setIsOverlayEnabled] = useState(false)
 	const [isOverlayPinned, setIsOverlayPinned] = useState(false)
+
+	const styles = {
+		panelContent: {
+			padding: '20px',
+		},
+		instrumentControlButton: {
+			backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+			color: GLOBAL_COLOR.WHITE,
+			border: "none",
+			padding: GLOBAL_STYLE.GLOBAL_PADDING_SMALL,
+			fontWeight: "normal",
+			lineHeight: "20px",
+			fontSize: GLOBAL_STYLE.GLOBAL_FONT_SECONDARY.fontSize,
+		},
+		instrumentControlButtonHover: {
+			fontWeight: "bold",
+			fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+		}
+	}
 
 	useEffect(() => {
 		window.overlay.receive("on-create", (id: string) => {
@@ -110,8 +128,8 @@ const InstrumentButton: React.FC<{
 			}}>
 				{isOverlayEnabled ? (
 					<ButtonForMouse
-						style={instrumentPanelStyle.instrumentControlButton}
-						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
+						style={styles.instrumentControlButton}
+						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
 							disableOverlay()
 						}}
@@ -120,8 +138,8 @@ const InstrumentButton: React.FC<{
 					</ButtonForMouse>
 				) : (
 					<ButtonForMouse
-						style={instrumentPanelStyle.instrumentControlButton}
-						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
+						style={styles.instrumentControlButton}
+						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
 							handleUserEnableOverlay()
 						}}
@@ -131,8 +149,8 @@ const InstrumentButton: React.FC<{
 				)}
 				{isOverlayEnabled && isOverlayPinned && (
 					<ButtonForMouse
-						style={instrumentPanelStyle.instrumentControlButton}
-						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
+						style={styles.instrumentControlButton}
+						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
 							handlePin(false)
 						}}
@@ -142,8 +160,8 @@ const InstrumentButton: React.FC<{
 				)}
 				{isOverlayEnabled && !isOverlayPinned && (
 					<ButtonForMouse
-						style={instrumentPanelStyle.instrumentControlButton}
-						styleHover={instrumentPanelStyle.instrumentControlButtonHover}
+						style={styles.instrumentControlButton}
+						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
 							handlePin(true)
 						}}
@@ -152,8 +170,8 @@ const InstrumentButton: React.FC<{
 					</ButtonForMouse>
 				)}
 				{!isOverlayEnabled && (<ButtonForMouse
-					style={instrumentPanelStyle.instrumentControlButton}
-					styleHover={instrumentPanelStyle.instrumentControlButtonHover}
+					style={styles.instrumentControlButton}
+					styleHover={styles.instrumentControlButtonHover}
 					onClick={() => {
 						deleteInstrument()
 					}}
@@ -166,4 +184,4 @@ const InstrumentButton: React.FC<{
 	</div>)
 }
 
-export default InstrumentButton
+export default HUDBlock

@@ -2,7 +2,6 @@ import React from 'react'
 import { GLOBAL_COLOR } from '../../style/color'
 
 const HOTASInput3Axis1: React.FC = () => {
-
   return (
     <div
       style={{

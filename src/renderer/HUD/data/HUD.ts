@@ -1,9 +1,10 @@
-import { IControl, IInstrumentOption, IInstrumentTemplate } from "./types"
-import { INSTRUMENT_CONST } from '../const/instrumentConst'
+import { IControl, IInstrumentTemplate } from "../../instrument/types"
 import { IOverlayOption } from "@shared/overlay-types"
 import { OverlayStorage } from "../../overlay/util/overlayStorage"
+import { IHUDOption } from "../types"
+import { INSTRUMENT_CONST } from "../../instrument/const"
 
-export class Instrument implements IInstrumentOption {
+export class HUD implements IHUDOption {
   id: string
   isOverlayEnabled: boolean
   controlList?: IControl[] | undefined
@@ -14,12 +15,12 @@ export class Instrument implements IInstrumentOption {
   template!: IInstrumentTemplate
   overlayOption!: IOverlayOption
 
-  constructor (instrumentOption: IInstrumentOption) {
-    this.id = instrumentOption.id
-    this.templateId = instrumentOption.templateId
-    this.overlayOptionId = instrumentOption.overlayOptionId
-    this.isOverlayEnabled = instrumentOption.isOverlayEnabled
-    this.controlList = instrumentOption.controlList
+  constructor (param: IHUDOption) {
+    this.id = param.id
+    this.templateId = param.templateId
+    this.overlayOptionId = param.overlayOptionId
+    this.isOverlayEnabled = param.isOverlayEnabled
+    this.controlList = param.controlList
     let found = false
     for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
       if (each.id == this.templateId) {
@@ -33,14 +34,14 @@ export class Instrument implements IInstrumentOption {
     }
   }
 
-  async build(): Promise<Instrument> {
+  async build(): Promise<HUD> {
     const overlay = await OverlayStorage.get(this.overlayOptionId)
     if (!overlay) throw new Error()
     this.overlayOption = overlay
     return this
   }
 
-  getOption(): IInstrumentOption {
+  getOption(): IHUDOption {
     return {
       id: this.id,
       isOverlayEnabled: this.isOverlayEnabled,

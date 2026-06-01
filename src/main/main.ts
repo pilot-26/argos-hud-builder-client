@@ -3,7 +3,7 @@ import "./handler/overlayHandler"
 import "./handler/storageHandler"
 import "./handler/virtualAPIHandler"
 import path from 'path'
-import { MAIN_CONST } from './const/mainConst'
+import { MAIN_CONST } from './const'
 import { WindowManager } from './windowManager'
 
 const isDev = !app.isPackaged

@@ -1,11 +1,12 @@
 import { ipcMain } from 'electron'
 import { TCPClient } from '../tcp/client'
+import { VIRTUAL_CONST } from '../virtual/const'
 
 let mTCPClient: TCPClient | undefined = undefined
-ipcMain.handle("virtual-api-connect", async (event, option) => {
+ipcMain.handle("virtual-api-connect", async (event) => {
   if (mTCPClient) return
   
-  mTCPClient = new TCPClient(option.host, option.port)
+  mTCPClient = new TCPClient(VIRTUAL_CONST.DEFAULT_HOST, VIRTUAL_CONST.DEFAULT_PORT)
   await mTCPClient.connect()
 })
 

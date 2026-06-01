@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
-import { IControl, IInstrumentOption, IInstrumentTemplate } from "./types"
+import { IControl, IInstrumentTemplate } from "../../instrument/types"
+import { IHUDOption } from "../types"
 import { OverlayOption } from '../../overlay/data/overlayOption'
 import { IOverlayTemplate } from '@shared/overlay-types'
 
-export class InstrumentOption implements IInstrumentOption {
+export class HUDOption implements IHUDOption {
   id: string
   isOverlayEnabled: boolean
   controlList?: IControl[] | undefined
@@ -30,7 +31,7 @@ export class InstrumentOption implements IInstrumentOption {
     this.overlayOption = new OverlayOption(pInstrumentTemplate.overlayTemplate)
   }
 
-  build(): InstrumentOption {
+  build(): HUDOption {
     this.overlayOption.build()
     this.overlayOptionId = this.overlayOption.id
     return this

@@ -23,12 +23,12 @@ declare global {
       showContextMenu: (id: string) => Promise<void>
     },
     virtualAPI: {
-      connect: (host: string, port: number) => Promise<void>
+      connect: () => Promise<void>
       send: (message: any) => Promise<void>
       disconnect: () => Promise<void>
     },
     inputAPI: {
-      connect: (host: string, port: number) => Promise<void>
+      connect: () => Promise<void>
       send: (message: any) => Promise<void>
       sendAndReceive: (message: any) => Promise<string | undefined>
       disconnect: () => Promise<void>
@@ -66,13 +66,13 @@ contextBridge.exposeInMainWorld('overlay', {
 })
 
 contextBridge.exposeInMainWorld('virtualAPI', {
-  connect: (host: string, port: number) => ipcRenderer.invoke('virtual-api-connect', { host, port }),
+  connect: () => ipcRenderer.invoke('virtual-api-connect'),
   send: (message: any) => ipcRenderer.invoke('virtual-api-send', message),
   disconnect: () => ipcRenderer.invoke('virtual-api-disconnect')
 })
 
 contextBridge.exposeInMainWorld('inputAPI', {
-  connect: (host: string, port: number) => ipcRenderer.invoke('input-api-connect', { host, port }),
+  connect: () => ipcRenderer.invoke('input-api-connect'),
   send: (message: any) => ipcRenderer.invoke('input-api-send', message),
   sendAndReceive: (message: any) => ipcRenderer.invoke('input-api-send-and-receive', message),
   disconnect: () => ipcRenderer.invoke('input-api-disconnect')

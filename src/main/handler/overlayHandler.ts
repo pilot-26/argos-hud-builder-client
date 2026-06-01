@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import path from 'path'
-import { MAIN_CONST } from '../const/mainConst'
+import { MAIN_CONST } from '../const'
 import { WindowManager } from '../windowManager'
 import { IOverlayOption } from "../../shared/overlay-types"
 
