@@ -59,7 +59,7 @@ const App: React.FC = () => {
         for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
           if (templateId === each.id) {
             return each.instrumentComponent.getLogicElement({
-              params: ParamObject,
+              params: {...ParamObject, isActive: true},
               getUIElement: each.instrumentComponent.getUIElement
             })
           }

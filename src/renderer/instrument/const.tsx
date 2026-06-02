@@ -33,6 +33,33 @@ export class INSTRUMENT_CONST {
           maxHeight: 900,
         },
         controlTypeList: [EControlType.AXIS]
+      },
+      {
+        id: "RETRO_VIRTUAL_AXIS_1_HORIZONTAL",
+        name: "Retro Virtual Axis 1 Horizontal",
+        instrumentComponent: {
+          getLogicElement: getVirtualSlider,
+          getUIElement: getSkmrphSlider1H,
+        },
+        overlayTemplate: {
+          route: INSTRUMENT_CONST.INSTRUMENT_ROUTE,
+          isInteractable: true,
+          width: 300,
+          height: 200,
+          x: 0,
+          y: 0,
+        },
+        embeddedTemplate: {
+          width: 300,
+          height: 200,
+          x: 50,
+          y: 50,
+          minWidth: 300,
+          minHeight: 200,
+          maxWidth: 900,
+          maxHeight: 300,
+        },
+        controlTypeList: [EControlType.AXIS]
       }
     ]
 }

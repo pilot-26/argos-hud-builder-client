@@ -17,19 +17,19 @@ const RESIZE_HANDLE_SIZE = GLOBAL_STYLE.GLOBAL_PADDING_LARGE_NUM
 
 export const GenericEmbedded: React.FC<{
   children?: React.ReactNode
-  pEmbedded: Embedded
+  item: Embedded
   onResize?: (size: Size) => void
   onMove?: (position: Position) => void
 }> = ({
   children,
-  pEmbedded,
+  item,
   onResize,
   onMove
 }) => {
-  const [embedded, setEmbedded] = useState(pEmbedded)
+  const [embedded, setEmbedded] = useState(item)
   const [isHovered, setIsHovered] = useState(false)
-  const [position, setPosition] = useState<Position>({ x: pEmbedded.x, y: pEmbedded.y })
-  const [size, setSize] = useState<Size>({ width: pEmbedded.width, height: pEmbedded.height })
+  const [position, setPosition] = useState<Position>({ x: item.x, y: item.y })
+  const [size, setSize] = useState<Size>({ width: item.width, height: item.height })
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const [resizeDirection, setResizeDirection] = useState<'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | null>(null)
@@ -77,6 +77,10 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (item.isLocked) {
+      return
+    }
+
     e.preventDefault()
     setIsHovered(true)
 
@@ -98,6 +102,10 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (item.isLocked) {
+      return
+    }
+
     e.preventDefault()
     setIsHovered(true)
 
@@ -117,6 +125,9 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchMove = (e: TouchEvent) => {
+    if (item.isLocked) {
+      return
+    }
     e.preventDefault()
     
     if (isDragging) {
@@ -139,17 +150,17 @@ export const GenericEmbedded: React.FC<{
       let newY = initialPositionRef.current.y
 
       if (resizeDirection.includes('e')) {
-        newWidth = Math.max(pEmbedded.minWidth ?? 0, Math.min(pEmbedded.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
+        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
       }
       if (resizeDirection.includes('w')) {
-        newWidth = Math.max(pEmbedded.minWidth ?? 0, Math.min(pEmbedded.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
+        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
         newX = initialPositionRef.current.x + (initialSizeRef.current.width - newWidth)
       }
       if (resizeDirection.includes('s')) {
-        newHeight = Math.max(pEmbedded.minHeight ?? 0, Math.min(pEmbedded.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
+        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
       }
       if (resizeDirection.includes('n')) {
-        newHeight = Math.max(pEmbedded.minHeight ?? 0, Math.min(pEmbedded.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
+        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
         newY = initialPositionRef.current.y + (initialSizeRef.current.height - newHeight)
       }
 
@@ -164,18 +175,28 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseUp = () => {
+    if (item.isLocked) {
+      return
+    }
     setIsDragging(false)
     setIsResizing(false)
     setResizeDirection(null)
   }
 
   const handleTouchEnd = () => {
+    if (item.isLocked) {
+      return
+    }
     setIsDragging(false)
     setIsResizing(false)
     setResizeDirection(null)
   }
 
   React.useEffect(() => {
+    if (item.isLocked) {
+      return
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         const newX = e.clientX - dragStartRef.current.x
@@ -192,17 +213,17 @@ export const GenericEmbedded: React.FC<{
         let newY = initialPositionRef.current.y
 
         if (resizeDirection.includes('e')) {
-          newWidth = Math.max(pEmbedded.minWidth ?? 0, Math.min(pEmbedded.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
+          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
         }
         if (resizeDirection.includes('w')) {
-          newWidth = Math.max(pEmbedded.minWidth ?? 0, Math.min(pEmbedded.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
+          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
           newX = initialPositionRef.current.x + (initialSizeRef.current.width - newWidth)
         }
         if (resizeDirection.includes('s')) {
-          newHeight = Math.max(pEmbedded.minHeight ?? 0, Math.min(pEmbedded.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
+          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
         }
         if (resizeDirection.includes('n')) {
-          newHeight = Math.max(pEmbedded.minHeight ?? 0, Math.min(pEmbedded.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
+          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
           newY = initialPositionRef.current.y + (initialSizeRef.current.height - newHeight)
         }
 
@@ -231,14 +252,20 @@ export const GenericEmbedded: React.FC<{
   }, [isDragging, isResizing, handleMouseUp, handleTouchMove, handleTouchEnd, embedded])
 
   const handleMouseEnter = (e: React.MouseEvent) => {
+    if (item.isLocked) {
+      return
+    }
+    
     e.preventDefault()
     setIsHovered(true)
   }
 
   const handleMouseLeave = () => {
-    if (!isDragging && !isResizing) {
-      setIsHovered(false)
+    if (item.isLocked) {
+      return
     }
+
+    setIsHovered(false)
   }
 
   return (
@@ -252,8 +279,7 @@ export const GenericEmbedded: React.FC<{
         height: size.height,
         overflow: "visible",
         borderRadius: '8px',
-        // background: embedded.isLocked ? "transparent" : GLOBAL_COLOR.MASK,
-        pointerEvents: embedded.isLocked ? "none" : "auto",
+        // pointerEvents: item.isLocked ? "none" : "auto",
         zIndex: 100,
       }}
       onMouseOver={handleMouseEnter}

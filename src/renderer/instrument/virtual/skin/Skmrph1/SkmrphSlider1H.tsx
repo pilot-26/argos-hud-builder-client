@@ -26,10 +26,15 @@ export const SkmrphSlider1V: React.FC<{
   axisValue,
   setAxisValue
 }) => {
+  const styles = {
+    ...SKMRPH1_STYLES,
+    controlGlowBackground: 'linear-gradient(180deg, rgba(40,50,60,0.3) 0%, transparent 100%)'
+  }
+
   return (
     <div style={{
-      width: '100vw',
-      height: '100vh',
+      width: '100%',
+      height: '100%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -40,10 +45,12 @@ export const SkmrphSlider1V: React.FC<{
       boxSizing: 'border-box'
     }}>
       <div style={{
-        background: SKMRPH1_STYLES.frameBackground,
+        background: styles.frameBackground,
         borderRadius: '24px',
         padding: '28px 32px',
-        boxShadow: SKMRPH1_STYLES.frameShadow,
+        boxShadow: styles.frameShadow,
+        height: "100%",
+        width: '100%',
         position: 'relative'
       }}>
         <div style={{
@@ -54,22 +61,21 @@ export const SkmrphSlider1V: React.FC<{
           height: '10px',
           borderRadius: '50%',
           background: isTooLow
-            ? SKMRPH1_STYLES.indicatorLowBackground
-            : SKMRPH1_STYLES.indicatorBackground,
+            ? styles.indicatorLowBackground
+            : styles.indicatorBackground,
           boxShadow: isTooLow
-            ? SKMRPH1_STYLES.indicatorLowShadow
-            : SKMRPH1_STYLES.indicatorShadow,
+            ? styles.indicatorLowShadow
+            : styles.indicatorShadow,
           transition: 'all 0.15s ease'
         }} />
         <div style={{
-          width: '70vw',
-          height: '160px',
-          background: SKMRPH1_STYLES.controlShadeBackground,
+          width: '100%',
+          height: '100%',
+          background: styles.controlShadeBackground,
           borderRadius: '16px',
           padding: '24px',
-          boxShadow: SKMRPH1_STYLES.controlShadeShadow,
+          boxShadow: styles.controlShadeShadow,
           position: 'relative',
-          overflow: 'hidden'
         }}>
           <div style={{
             position: 'absolute',
@@ -77,17 +83,19 @@ export const SkmrphSlider1V: React.FC<{
             left: '16px',
             right: '16px',
             height: '40px',
-            background: SKMRPH1_STYLES.controlGlowBackground,
+            background: styles.controlGlowBackground,
             borderRadius: '8px 8px 0 0'
           }} />
           <div style={{
             position: 'absolute',
             width: "100%",
-            top: '16px',
+            top: '0px',
             left: "0px",
             padding: "0px 24px",
             display: 'flex',
+            flexDirection: 'row',
             justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
             {[-1, -0.5, 0, 0.5, 1].map((mark) => (
               <div key={mark} style={{
@@ -99,9 +107,9 @@ export const SkmrphSlider1V: React.FC<{
                 <div style={{
                   width: '2px',
                   height: mark === 0 ? '16px' : '8px',
-                  background: mark === 0 ? SKMRPH1_STYLES.markCenterBackground : SKMRPH1_STYLES.markBackground,
+                  background: mark === 0 ? styles.markCenterBackground : styles.markBackground,
                   borderRadius: '1px',
-                  boxShadow: mark === 0 ? SKMRPH1_STYLES.marckCenterShadow : SKMRPH1_STYLES.markShadow
+                  boxShadow: mark === 0 ? styles.marckCenterShadow : styles.markShadow
                 }} />
               </div>
             ))}
@@ -110,9 +118,9 @@ export const SkmrphSlider1V: React.FC<{
           <div style={{
             position: 'relative',
             height: '100%',
+            width: '100%',
             display: 'flex',
             alignItems: 'center',
-            paddingTop: '36px'
           }}>
             <div style={{
               position: 'absolute',
@@ -122,7 +130,7 @@ export const SkmrphSlider1V: React.FC<{
               top: 'calc(50%)',
               transform: 'translateY(-50%)',
               borderRadius: '6px',
-              boxShadow: SKMRPH1_STYLES.trackShadow
+              boxShadow: styles.trackShadow
             }} />
 
             <div style={{
@@ -133,11 +141,11 @@ export const SkmrphSlider1V: React.FC<{
               top: 'calc(50%)',
               transform: 'translateY(-50%)',
               background: isTooLow
-                ? SKMRPH1_STYLES.progressBackgroundLow
-                : SKMRPH1_STYLES.progressBackground,
+                ? styles.progressBackgroundLow
+                : styles.progressBackground,
               boxShadow: isTooLow
-                ? SKMRPH1_STYLES.progressLowShadow
-                : SKMRPH1_STYLES.progressShadow,
+                ? styles.progressLowShadow
+                : styles.progressShadow,
                   borderRadius: '6px 0 0 6px',
             }} />
 
@@ -145,13 +153,13 @@ export const SkmrphSlider1V: React.FC<{
               style={{
                 position: 'absolute',
                 left: `calc(${normalizedValue * 100}% - 20px)`,
-                top: "26px",
+                top: `calc(50% - ${styles.knobWidth} / 2)`,
                 width: '40px',
-                height: '60px',
-                background: SKMRPH1_STYLES.knobBackground,
+                height: styles.knobWidth,
+                background: styles.knobBackground,
                 borderRadius: '8px',
-                border: SKMRPH1_STYLES.knobBorder,
-                boxShadow: SKMRPH1_STYLES.knobShadow,
+                border: styles.knobBorder,
+                boxShadow: styles.knobShadow,
                 cursor: 'pointer',
                 zIndex: 10
               }}

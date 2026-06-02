@@ -17,10 +17,10 @@ const createMainWindow = (): void => {
     WindowManager.mainWindow.focus()
   } else {
     WindowManager.mainWindow = new BrowserWindow({
-      width: 600,
-      height: 400,
-      minWidth: 600,
-      minHeight: 400,
+      width: 800,
+      height: 600,
+      minWidth: 800,
+      minHeight: 600,
       resizable: true,
       frame: false,
       titleBarStyle: 'hidden',

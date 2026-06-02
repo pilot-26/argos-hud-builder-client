@@ -5,7 +5,6 @@ import { IControl } from "../instrument/types"
  */
 export interface IDashboardOption {
   id: string
-  isEmbeddedLocked: boolean
   controlList?: IControl[]
   templateId: string
   embeddedOptionId: string

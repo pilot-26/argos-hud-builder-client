@@ -36,9 +36,9 @@ const DashboardBlock: React.FC<{
 
 	return (
     <GenericEmbedded 
-      pEmbedded={item.embedded} 
+      item={item.embedded} 
     >
-      {!item.isEmbeddedLocked && (
+      {!item.embedded.isLocked && (
         <div
           style={{
             position: 'absolute',
@@ -46,7 +46,6 @@ const DashboardBlock: React.FC<{
             left: 0,
             width: '100%',
             height: '100%',
-            // zIndex: 1000,
             background: GLOBAL_COLOR.TRANSPARENT,
             display: 'flex',
             justifyContent: 'center',
@@ -56,25 +55,34 @@ const DashboardBlock: React.FC<{
           onMouseOver={() => setIsHover(true)}
           onMouseOut={() => setIsHover(false)}
         >
-          <ButtonForMouse
+          <div
             style={{
               position: 'absolute',
               top: `-${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
               right: `-${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '8px'
             }}
-            styleHover={{
-              transform: "scale(1.2)"
-            }}
-            onClick={() => {}}
           >
-            <AiFillCloseCircle size={24} color={GLOBAL_COLOR.CAUTION} />
-          </ButtonForMouse>
+            <ButtonForMouse
+              styleHover={{
+                transform: "scale(1.2)"
+              }}
+              onClick={() => {}}
+            >
+              <AiFillCloseCircle size={24} color={GLOBAL_COLOR.CAUTION} />
+            </ButtonForMouse>
+          </div>
         </div>
       )}
       {item.template.instrumentComponent.getLogicElement({
         getUIElement: item.template.instrumentComponent.getUIElement,
         params: () => {
-          const params: any = {}
+          const params: any = {
+            isActive: true
+          }
           item.controlList?.forEach((each, index) => {
             params[`controlId${index}`] = each.id
           })

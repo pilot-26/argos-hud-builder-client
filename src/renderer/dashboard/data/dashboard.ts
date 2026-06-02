@@ -10,7 +10,6 @@ import { DashboardStorage } from "../util/dashboardStorage"
  */
 export class Dashboard implements IDashboardOption {
   id: string
-  isEmbeddedLocked: boolean
   controlList?: IControl[] | undefined
 
   templateId: string
@@ -21,7 +20,6 @@ export class Dashboard implements IDashboardOption {
 
   constructor (param: IDashboardOption) {
     this.id = param.id
-    this.isEmbeddedLocked = param.isEmbeddedLocked
     this.templateId = param.templateId
     this.embeddedOptionId = param.embeddedOptionId
     this.controlList = param.controlList
@@ -48,7 +46,6 @@ export class Dashboard implements IDashboardOption {
   getOption(): IDashboardOption {
     return {
       id: this.id,
-      isEmbeddedLocked: this.isEmbeddedLocked,
       controlList: this.controlList,
       templateId: this.templateId,
       embeddedOptionId: this.embeddedOptionId
@@ -56,6 +53,7 @@ export class Dashboard implements IDashboardOption {
   }
 
   async save() {
+    await this.embedded.save()
     await DashboardStorage.set(this)
   }
 }

@@ -10,7 +10,6 @@ import { DashboardStorage } from '../util/dashboardStorage'
  */
 export class DashboardOption implements IDashboardOption {
   id: string
-  isEmbeddedLocked: boolean = false
   controlList?: IControl[] | undefined = undefined
   templateId: string
   

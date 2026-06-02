@@ -7,11 +7,12 @@ import { IInstrumentTemplate, } from '../instrument/types'
 import { INSTRUMENT_CONST } from '../instrument/const'
 import { DashboardStorage } from '../dashboard/util/dashboardStorage'
 import { Dashboard } from '../dashboard/data/dashboard'
-import DashboardBlock from '../dashboard/dashboardBlock'
 import { DashboardOption } from '../dashboard/data/dashboardOption'
+import DashboardBlock from '../dashboard/DashboardBlock'
 
 const DashboardTab: React.FC = () => {
   const [showAddModal, setShowAddModal] = React.useState(false)
+  const [isLocked, setIsLocked] = React.useState(false)
   const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<Dashboard[]>([])
 
   const loadInstrument = async () => {
@@ -38,6 +39,22 @@ const DashboardTab: React.FC = () => {
     loadInstrument()
   }, [showAddModal])
 
+  const handleLock = () => {
+    setIsLocked(true)
+    for (const item of selectedInstrumentList) {
+      item.embedded.isLocked = true
+      item.save()
+    }
+    setSelectedInstrumentList(selectedInstrumentList)
+  }
+  const handleUnlock = () => {
+    setIsLocked(false)
+    for (const item of selectedInstrumentList) {
+      item.embedded.isLocked = false
+      item.save()
+    }
+    setSelectedInstrumentList(selectedInstrumentList)
+  }
   const handleAdd = () => {
     setShowAddModal(true)
   }
@@ -51,20 +68,54 @@ const DashboardTab: React.FC = () => {
           onDelete={handleInstrumentDelete}
         />
       ))}
-      <ButtonForMouse
+      <div
         style={{
-          ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
           position: 'absolute',
-          bottom: GLOBAL_STYLE.GLOBAL_PADDING,
-          right: GLOBAL_STYLE.GLOBAL_PADDING,
+          bottom: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+          right: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: '8px'
         }}
-        styleHover={{
-          backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
-        }}
-        onClick={handleAdd}
       >
-        Add
-      </ButtonForMouse>
+        {isLocked ? (
+          <ButtonForMouse
+            style={{
+              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
+            }}
+            styleHover={{
+              backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+            }}
+            onClick={handleUnlock}
+          >
+            Unlock
+          </ButtonForMouse>
+        ) : (
+          <ButtonForMouse
+            style={{
+              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
+            }}
+            styleHover={{
+              backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+            }}
+            onClick={handleLock}
+          >
+            Lock
+          </ButtonForMouse>
+        )}
+        <ButtonForMouse
+          style={{
+            ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
+          }}
+          styleHover={{
+            backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+          }}
+          onClick={handleAdd}
+        >
+          Add
+        </ButtonForMouse>
+      </div>
       {showAddModal && (
         <div style={{
           position: 'fixed',

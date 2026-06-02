@@ -30,17 +30,18 @@ export const VirtualSlider: React.FC<{
   params,
   getUIElement
 }) => {
-  const [isDummy, setIsDummy] = useState<boolean>(Boolean(params.isDummy) || false)
+  const [isActive, setIsActive] = useState<boolean>(Boolean(params.isActive) || false)
+
   const [axisId] = useState<string>(params.controlId0)
   const [axisValue, setAxisValue] = useState<number>(0)
 
   useEffect(() => {
-    if (isDummy) return
+    if (!isActive) return
 
     initController()
   }, [])
   useEffect(() => {
-    if (isDummy) return
+    if (!isActive) return
 
     sendInput()
   }, [axisValue])

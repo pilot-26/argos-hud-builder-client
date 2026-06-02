@@ -26,6 +26,9 @@ export const SkmrphSlider1V: React.FC<{
   axisValue,
   setAxisValue
 }) => {
+  const styles = {
+    ...SKMRPH1_STYLES
+  }
   return (
     <div style={{
       width: '100%',
@@ -39,10 +42,10 @@ export const SkmrphSlider1V: React.FC<{
       boxSizing: 'border-box'
     }}>
       <div style={{
-        background: SKMRPH1_STYLES.frameBackground,
+        background: styles.frameBackground,
         borderRadius: '24px',
         padding: '32px 28px',
-        boxShadow: SKMRPH1_STYLES.frameShadow,
+        boxShadow: styles.frameShadow,
         position: 'relative',
         height: "100%",
         width: '100%',
@@ -56,19 +59,19 @@ export const SkmrphSlider1V: React.FC<{
           height: '10px',
           borderRadius: '50%',
           background: isTooLow
-            ? SKMRPH1_STYLES.indicatorLowBackground
-            : SKMRPH1_STYLES.indicatorBackground,
+            ? styles.indicatorLowBackground
+            : styles.indicatorBackground,
           boxShadow: isTooLow
-            ? SKMRPH1_STYLES.indicatorLowShadow
-            : SKMRPH1_STYLES.indicatorShadow,
+            ? styles.indicatorLowShadow
+            : styles.indicatorShadow,
           transition: 'all 0.15s ease'
         }} />
         <div style={{
           height: "100%",
-          background: SKMRPH1_STYLES.controlShadeBackground,
+          background: styles.controlShadeBackground,
           borderRadius: '16px',
           padding: '24px',
-          boxShadow: SKMRPH1_STYLES.controlShadeShadow,
+          boxShadow: styles.controlShadeShadow,
           position: 'relative',
         }}>
           <div style={{
@@ -77,7 +80,7 @@ export const SkmrphSlider1V: React.FC<{
             left: '8px',
             bottom: '16px',
             width: '40px',
-            background: SKMRPH1_STYLES.controlGlowBackground,
+            background: styles.controlGlowBackground,
             borderRadius: '8px 0 0 8px'
           }} />
           <div style={{
@@ -101,9 +104,9 @@ export const SkmrphSlider1V: React.FC<{
                 <div style={{
                   height: '2px',
                   width: mark === 0 ? '16px' : '8px',
-                  background: mark === 0 ? SKMRPH1_STYLES.markCenterBackground : SKMRPH1_STYLES.markBackground,
+                  background: mark === 0 ? styles.markCenterBackground : styles.markBackground,
                   borderRadius: '1px',
-                  boxShadow: mark === 0 ? SKMRPH1_STYLES.marckCenterShadow : SKMRPH1_STYLES.markShadow
+                  boxShadow: mark === 0 ? styles.marckCenterShadow : styles.markShadow
                 }} />
               </div>
             ))}
@@ -124,7 +127,7 @@ export const SkmrphSlider1V: React.FC<{
               left: 'calc(50%)',
               transform: 'translateX(-50%)',
               borderRadius: '6px',
-              boxShadow: SKMRPH1_STYLES.trackShadow,
+              boxShadow: styles.trackShadow,
             }} />
 
             <div style={{
@@ -135,11 +138,11 @@ export const SkmrphSlider1V: React.FC<{
               left: 'calc(50%)',
               transform: 'translateX(-50%)',
               background: isTooLow
-                ? SKMRPH1_STYLES.progressBackgroundLow
-                : SKMRPH1_STYLES.progressBackground,
+                ? styles.progressBackgroundLow
+                : styles.progressBackground,
               boxShadow: isTooLow
-                ? SKMRPH1_STYLES.progressLowShadow
-                : SKMRPH1_STYLES.progressShadow,
+                ? styles.progressLowShadow
+                : styles.progressShadow,
               borderRadius: '0 0 6px 6px',
             }} />
 
@@ -147,13 +150,13 @@ export const SkmrphSlider1V: React.FC<{
               style={{
                 position: 'absolute',
                 top: `calc(${(1 - normalizedValue) * 100}% - 20px)`,
-                left: `calc(50% - ${SKMRPH1_STYLES.knobWidth} / 2)`,
-                width: SKMRPH1_STYLES.knobWidth,
+                left: `calc(50% - ${styles.knobWidth} / 2)`,
+                width: styles.knobWidth,
                 height: '40px',
-                background: SKMRPH1_STYLES.knobBackground,
+                background: styles.knobBackground,
                 borderRadius: '8px',
-                border: SKMRPH1_STYLES.knobBorder,
-                boxShadow: SKMRPH1_STYLES.knobShadow,
+                border: styles.knobBorder,
+                boxShadow: styles.knobShadow,
                 cursor: 'pointer',
                 zIndex: 10
               }}
