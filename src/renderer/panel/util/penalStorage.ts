@@ -1,26 +1,26 @@
-import { HUD } from "../data/HUD"
-import { IHUDOption } from "../types"
+import { Panel } from "../data/penal"
+import { IPanelOption } from "../types"
 
-export class HUDStorage {
-	static readonly INSTRUMENT_DIR = 'HUDs'
-	static async setOption(hudOption: IHUDOption) {
-		await window.storage.write(`${this.INSTRUMENT_DIR}/${hudOption.id}.json`, hudOption)
+export class PanelStorage {
+	static readonly INSTRUMENT_DIR = 'panels'
+	static async setOption(panelOption: IPanelOption) {
+		await window.storage.write(`${this.INSTRUMENT_DIR}/${panelOption.id}.json`, panelOption)
 	}
-	static async set(hud: HUD) {
-		const option = hud.getOption()
+	static async set(panel: Panel) {
+		const option = panel.getOption()
 		await window.storage.write(`${this.INSTRUMENT_DIR}/${option.id}.json`, option)
 	}
-	static async get(id: string): Promise<HUD | undefined> {
+	static async get(id: string): Promise<Panel | undefined> {
 		try {
-			const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${id}.json`) as IHUDOption
-			const overlay = await new HUD(option).build()
+			const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${id}.json`) as IPanelOption
+			const overlay = await new Panel(option).build()
 			return overlay
 		} catch (error) {
 			console.error("Error getting overlay:", error)
 			return undefined
 		}
 	}
-	static async list(): Promise<HUD[]> {
+	static async list(): Promise<Panel[]> {
 		try {
 			const files = await window.storage.list(this.INSTRUMENT_DIR) || []
 			const list = []
@@ -29,8 +29,8 @@ export class HUDStorage {
 				console.log(each)
 				const option = await window.storage.read(`${this.INSTRUMENT_DIR}/${each}`)
 				console.log(option)
-				const hud = await new HUD(option).build()
-				list.push(hud)
+				const panel = await new Panel(option).build()
+				list.push(panel)
 			}
 
 			return list

@@ -1,4 +1,3 @@
-import { GLOBAL_COLOR } from "../../style/color"
 import { GLOBAL_STYLE } from "../../style/style"
 
 export const F14Dash: React.FC = () => {

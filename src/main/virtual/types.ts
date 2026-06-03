@@ -1,3 +1,8 @@
+export interface IVServerSetting {
+  ip: string,
+  port: number,
+}
+
 export enum EVCommandType {
   REGISTER = "REGISTER",
   SEND_INPUT = "SEND_INPUT",
@@ -15,4 +20,21 @@ export interface IVCommandMessage {
   VControlType: EVControlType,
   axisValue?: number,
   buttonValue?: boolean,
+}
+
+export interface IEmulatorControlBind {
+  name: string
+  virtualControlId?: string
+  virtualControlType: EVControlType
+}
+
+export interface IEmulator {
+  id: string,
+  controlBindList: IEmulatorControlBind[]
+}
+
+export interface IVControlBind {
+  virtualControlId: string,
+  emulatorId: string,
+  emulatorControlName: string
 }

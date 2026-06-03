@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Dashboard } from './data/dashboard'
 import { GenericEmbedded } from '../embedded/GenericEmbedded'
 import { GLOBAL_STYLE } from '../style/style'
 import ButtonForMouse from '../components/ButtonForMouse'
 import { GLOBAL_COLOR } from '../style/color'
-import { AiFillCloseCircle } from "react-icons/ai"
+import { AiFillCloseCircle, AiFillSetting } from "react-icons/ai"
+import { Avionics } from './data/avionics'
 
-const DashboardBlock: React.FC<{
-	item: Dashboard,
+const AvionicsBlock: React.FC<{
+	item: Avionics,
 	onDelete?: (id: string) => void
 }> = ({
 	item,
@@ -58,12 +58,15 @@ const DashboardBlock: React.FC<{
           <div
             style={{
               position: 'absolute',
-              top: `-${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
-              right: `-${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+              // top: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+              // right: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
+              top: 0,
+              right: 0,
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              zIndex: 1000,
             }}
           >
             <ButtonForMouse
@@ -72,13 +75,21 @@ const DashboardBlock: React.FC<{
               }}
               onClick={() => {}}
             >
-              <AiFillCloseCircle size={24} color={GLOBAL_COLOR.CAUTION} />
+              <AiFillSetting size={24} color={GLOBAL_COLOR.MINIMUM} />
+            </ButtonForMouse>
+            <ButtonForMouse
+              styleHover={{
+                transform: "scale(1.2)"
+              }}
+              onClick={() => {}}
+            >
+              <AiFillCloseCircle size={24} color={GLOBAL_COLOR.MINIMUM} />
             </ButtonForMouse>
           </div>
         </div>
       )}
-      {item.template.instrumentComponent.getLogicElement({
-        getUIElement: item.template.instrumentComponent.getUIElement,
+      {item.template.avionicsComponent.getLogicElement({
+        getUIElement: item.template.avionicsComponent.getUIElement,
         params: () => {
           const params: any = {
             isActive: true
@@ -93,4 +104,4 @@ const DashboardBlock: React.FC<{
   )
 }
 
-export default DashboardBlock
+export default AvionicsBlock

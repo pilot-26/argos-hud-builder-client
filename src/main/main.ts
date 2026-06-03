@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, Tray } from 'electron'
 import "./handler/overlayHandler"
 import "./handler/storageHandler"
 import "./handler/virtualAPIHandler"
+import "./handler/virtualHandler"
 import path from 'path'
 import { MAIN_CONST } from './const'
 import { WindowManager } from './windowManager'
@@ -56,10 +57,10 @@ const createTray = () => {
   console.log('Icon path:', iconPath)
   try {
     tray = new Tray(iconPath)
-    tray.setToolTip('ARGOS HUD Builder HERA')
+    tray.setToolTip('ARGOS HUD Builder')
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: 'ARGOS HUD Builder HERA',
+        label: 'ARGOS HUD Builder',
         type: "normal",
         icon: iconPath,
         click: () => createMainWindow()

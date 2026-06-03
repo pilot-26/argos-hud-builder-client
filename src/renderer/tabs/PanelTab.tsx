@@ -3,41 +3,40 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IInstrumentTemplate, } from '../instrument/types'
-import { INSTRUMENT_CONST } from '../instrument/const'
-import HUDBlock from '../HUD/HUDBlock'
-import { HUDStorage } from '../HUD/util/HUDStorage'
-import { HUD } from '../HUD/data/HUD'
-import { HUDOption } from '../HUD/data/HUDOption'
-import { OverlayStorage } from '../overlay/util/overlayStorage'
-import { Overlay } from '../overlay/data/overlay'
+import { PanelStorage } from '../panel/util/penalStorage'
+import { IPanelTemplate } from '../panel/types'
+import { PanelOption } from '../panel/data/penalOption'
+import { Panel } from '../panel/data/penal'
+import { PanelBlock } from '../panel/PanelBlock'
+import { PANEL_CONST } from '../panel/const'
 
-const HUDTab: React.FC = () => {
+export const PanelTab: React.FC = () => {
   const [showAddModal, setShowAddModal] = React.useState(false)
-  const [selectedHUDList, setSelectedHUDList] = React.useState<HUD[]>([])
+  const [selectedPanelList, setSelectedPanelList] = React.useState<Panel[]>([])
 
-  const loadInstrument = async () => {
-    const saved = await HUDStorage.list()
-    setSelectedHUDList(saved)
+  const loadPanel = async () => {
+    const saved = await PanelStorage.list()
+    setSelectedPanelList(saved)
   }
 
-  const handleHUDDelete = async (id: string) => {
-    await HUDStorage.remove(id)
-    loadInstrument()
+  const handlePanelDelete = async (id: string) => {
+    await PanelStorage.remove(id)
+    loadPanel()
   }
 
-  const handleInstrumentAdd = async (item: IInstrumentTemplate) => {
-    const newInstrumentOption = await new HUDOption(item).create()
-    const newInstrument = new HUD(newInstrumentOption)
+  const handleInstrumentAdd = async (item: IPanelTemplate) => {
+    const userParam = {name: "1"}
+    const newInstrumentOption = await new PanelOption(item, userParam).create()
+    const newInstrument = new Panel(newInstrumentOption)
     await newInstrument.build()
     
-    loadInstrument()
+    loadPanel()
     
     setShowAddModal(false)
   }
 
   useEffect(() => {
-    loadInstrument()
+    loadPanel()
   }, [showAddModal])
 
   const handleAdd = () => {
@@ -50,6 +49,9 @@ const HUDTab: React.FC = () => {
       display: "flex",
       flexDirection: "column",
       gap: GLOBAL_STYLE.GLOBAL_GAP,
+      flex: 1,
+      position: 'relative',
+      overflow: 'auto'
     }}>
       <div style={{
         marginBottom: GLOBAL_STYLE.GLOBAL_PADDING,
@@ -58,11 +60,11 @@ const HUDTab: React.FC = () => {
         gridGap: GLOBAL_STYLE.GLOBAL_GAP,
         gap: GLOBAL_STYLE.GLOBAL_GAP,
       }}>
-        {selectedHUDList.map((item) => (
-          <HUDBlock
+        {selectedPanelList.map((item) => (
+          <PanelBlock
             key={item.id}
             item={item}
-            onDelete={handleHUDDelete}
+            onDelete={handlePanelDelete}
           />
         ))}
       </div>
@@ -109,7 +111,7 @@ const HUDTab: React.FC = () => {
                 gridGap: "10px",
                 gap: GLOBAL_STYLE.GLOBAL_PADDING,
               }}>
-                {INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET.map((item) => (
+                {PANEL_CONST.PANEL_TEMPLATE_PRESET.map((item) => (
                   <ButtonForMouse
                     key={item.name}
                     style={{
@@ -133,9 +135,6 @@ const HUDTab: React.FC = () => {
                       handleInstrumentAdd(item)
                     }}
                   >
-                    <div style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', transform: 'scale(0.5)' }}>
-                      {item.instrumentComponent.getUIElement()}
-                    </div>
                     <div style={GLOBAL_STYLE.GLOBAL_FONT_SECONDARY}>{item.name}</div>
                   </ButtonForMouse>
                 ))}
@@ -147,5 +146,3 @@ const HUDTab: React.FC = () => {
     </div>
   )
 }
-
-export default HUDTab

@@ -1,30 +1,29 @@
-import { IControl, IInstrumentTemplate } from "../../instrument/types"
-import { IDashboardOption } from "../types"
-import { INSTRUMENT_CONST } from "../../instrument/const"
+import { IAvionicsTemplate } from "../types"
+import { AVIONICS_CONST } from "../const"
 import { Embedded } from "../../embedded/data/embedded"
-import { IEmbeddedOption } from "../../embedded/types"
-import { DashboardStorage } from "../util/dashboardStorage"
+import { AvionicsStorage } from "../util/avionicsStorage"
+import { IAvionicsOption, IControl } from "@shared/avionics-types"
 
 /**
  * For filling up the blanks after getting serialized HUD option from storage
  */
-export class Dashboard implements IDashboardOption {
+export class Avionics implements IAvionicsOption {
   id: string
   controlList?: IControl[] | undefined
 
   templateId: string
   embeddedOptionId: string
 
-  template!: IInstrumentTemplate
+  template!: IAvionicsTemplate
   embedded!: Embedded
 
-  constructor (param: IDashboardOption) {
+  constructor (param: IAvionicsOption) {
     this.id = param.id
     this.templateId = param.templateId
     this.embeddedOptionId = param.embeddedOptionId
     this.controlList = param.controlList
     let found = false
-    for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
+    for (const each of AVIONICS_CONST.AVIONICS_TEMPLATE_PRESET) {
       if (each.id == this.templateId) {
         this.template = each
         found = true
@@ -36,14 +35,22 @@ export class Dashboard implements IDashboardOption {
     }
   }
 
-  async build(): Promise<Dashboard> {
+  static async getFromId(id: string): Promise<Avionics | undefined> {
+    const option = await AvionicsStorage.get(id)
+    if (option) {
+      return new Avionics(option)
+    }
+    return undefined
+  }
+
+  async build(): Promise<Avionics> {
     const embedded = await Embedded.getFromId(this.embeddedOptionId)
     if (!embedded) throw new Error()
     this.embedded = embedded
     return this
   }
 
-  getOption(): IDashboardOption {
+  getOption(): IAvionicsOption {
     return {
       id: this.id,
       controlList: this.controlList,
@@ -54,6 +61,6 @@ export class Dashboard implements IDashboardOption {
 
   async save() {
     await this.embedded.save()
-    await DashboardStorage.set(this)
+    await AvionicsStorage.set(this)
   }
 }

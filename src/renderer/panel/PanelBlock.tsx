@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { HUD } from './data/HUD'
 import { IOverlayOption } from '@shared/overlay-types'
-import { HUDStorage } from './util/HUDStorage'
-import { Overlay } from '../overlay/data/overlay'
+import { Panel } from './data/penal'
 
-const HUDBlock: React.FC<{
-	item: HUD,
+export const PanelBlock: React.FC<{
+	item: Panel,
 	onDelete?: (id: string) => void
 }> = ({
 	item,
@@ -68,21 +66,18 @@ const HUDBlock: React.FC<{
 	const enableOverlay = async (overlayOption: IOverlayOption) => {
 		setIsOverlayEnabled(true)
 		const args: any = {
-			templateId: item.templateId
+			panelId: item.id
 		}
-		item.controlList?.forEach((each, index) => {
-			args[`controlId${index}`] = each.id
-		})
 		window.overlay.create(overlayOption, args)
 		item.isOverlayEnabled = true
-		HUDStorage.set(item)
+    item.save()
 	}
 
 	const disableOverlay = () => {
 		setIsOverlayEnabled(false)
 		window.overlay.close(item.overlayOptionId)
 		item.isOverlayEnabled = false
-		HUDStorage.set(item)
+    item.save()
 	}
 
 	const handleUserEnableOverlay = async () => {
@@ -95,7 +90,7 @@ const HUDBlock: React.FC<{
 	}
 
 	return (<div
-		key={item.template.name}
+		key={item.name}
 		style={{
 			position: 'relative',
 			border: "none",
@@ -179,8 +174,6 @@ const HUDBlock: React.FC<{
 				</ButtonForMouse>)}
 			</div>
 		)}
-		{item.template.name}
+		{item.name}
 	</div>)
 }
-
-export default HUDBlock

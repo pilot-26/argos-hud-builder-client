@@ -3,65 +3,63 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IInstrumentTemplate, } from '../instrument/types'
-import { INSTRUMENT_CONST } from '../instrument/const'
-import { DashboardStorage } from '../dashboard/util/dashboardStorage'
-import { Dashboard } from '../dashboard/data/dashboard'
-import { DashboardOption } from '../dashboard/data/dashboardOption'
-import DashboardBlock from '../dashboard/DashboardBlock'
-import { F14Dash } from '../dashboard/background/F14Dash'
+import { Panel } from './data/penal'
+import { Avionics } from '../avionics/data/avionics'
+import { IAvionicsTemplate } from '../avionics/types'
+import AvionicsBlock from '../avionics/AvionicsBlock'
+import { RetroMFD } from './background/RetroMFD'
+import { AVIONICS_CONST } from '../avionics/const'
 
-const DashboardTab: React.FC = () => {
+export const PanelComponent: React.FC<{
+  panelId: string
+}> = (
+{
+  panelId
+}) => {
   const [showBackgroundModal, setBackgroundModal] = React.useState(false)
   const [showAddModal, setShowAddModal] = React.useState(false)
   const [isLocked, setIsLocked] = React.useState(false)
-  const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<Dashboard[]>([])
+  const [selectedAvionicsList, setSelectedAvionicsList] = React.useState<Avionics[]>([])
+  const [panel, setPanel] = React.useState<Panel>()
 
-  const loadInstrument = async () => {
-    const saved = await DashboardStorage.list()
-    for (const item of saved) {
-      if (item.embedded.isLocked) {
-        setIsLocked(true)
-        break
-      }
-    }
-    setSelectedInstrumentList(saved)
+  const loadPanel = async () => {
+    const panelFromStorage = await Panel.getFromId(panelId)
+    if (!panelFromStorage) return
+    await panelFromStorage.build()
+    setPanel(panelFromStorage)
+    setSelectedAvionicsList(panelFromStorage.avionicsList)
   }
 
-  const handleInstrumentDelete = async (id: string) => {
-    await DashboardStorage.remove(id)
-    loadInstrument()
+  const handleAvionicsDelete = async (id: string) => {
+    await panel?.removeAvionics(id)
+    loadPanel()
   }
 
-  const handleInstrumentAdd = async (item: IInstrumentTemplate) => {
-    const newInstrumentOption = await new DashboardOption(item).create()
-    const newInstrument = new Dashboard(newInstrumentOption)
-    await newInstrument.build()
-    
-    loadInstrument()
-    
+  const handleAvionicsAdd = async (template: IAvionicsTemplate) => {
+    await panel?.addAvionics(template)
+    loadPanel()
     setShowAddModal(false)
   }
 
   useEffect(() => {
-    loadInstrument()
+    loadPanel()
   }, [showAddModal])
 
   const handleLock = () => {
     setIsLocked(true)
-    for (const item of selectedInstrumentList) {
+    for (const item of selectedAvionicsList) {
       item.embedded.isLocked = true
       item.save()
     }
-    setSelectedInstrumentList(selectedInstrumentList)
+    setSelectedAvionicsList(selectedAvionicsList)
   }
   const handleUnlock = () => {
     setIsLocked(false)
-    for (const item of selectedInstrumentList) {
+    for (const item of selectedAvionicsList) {
       item.embedded.isLocked = false
       item.save()
     }
-    setSelectedInstrumentList(selectedInstrumentList)
+    setSelectedAvionicsList(selectedAvionicsList)
   }
   const handleBackground = () => {
 
@@ -72,15 +70,23 @@ const DashboardTab: React.FC = () => {
   }
 
   return (
-    <div>
-      {selectedInstrumentList.map((item) => (
-        <DashboardBlock
+    <div
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {selectedAvionicsList.map((item) => (
+        <AvionicsBlock
           key={item.id}
           item={item}
-          onDelete={handleInstrumentDelete}
+          onDelete={handleAvionicsDelete}
         />
       ))}
-      <F14Dash />
+      {/* <RetroMFD /> */}
       <div
         style={{
           position: 'absolute',
@@ -99,35 +105,21 @@ const DashboardTab: React.FC = () => {
           styleHover={{
             backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
           }}
-          onClick={handleUnlock}
+          onClick={() => {}}
+        >
+          Enable
+        </ButtonForMouse>
+        <ButtonForMouse
+          style={{
+            ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
+          }}
+          styleHover={{
+            backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+          }}
+          onClick={() => {}}
         >
           Background
         </ButtonForMouse>
-        {isLocked ? (
-          <ButtonForMouse
-            style={{
-              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
-            }}
-            styleHover={{
-              backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
-            }}
-            onClick={handleUnlock}
-          >
-            Unlock
-          </ButtonForMouse>
-        ) : (
-          <ButtonForMouse
-            style={{
-              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
-            }}
-            styleHover={{
-              backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
-            }}
-            onClick={handleLock}
-          >
-            Lock
-          </ButtonForMouse>
-        )}
         <ButtonForMouse
           style={{
             ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
@@ -147,7 +139,7 @@ const DashboardTab: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+          backgroundColor: GLOBAL_COLOR.MASK,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -172,7 +164,7 @@ const DashboardTab: React.FC = () => {
                 gridGap: "10px",
                 gap: GLOBAL_STYLE.GLOBAL_PADDING,
               }}>
-                {INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET.map((item) => (
+                {AVIONICS_CONST.AVIONICS_TEMPLATE_PRESET.map((item) => (
                   <ButtonForMouse
                     key={item.name}
                     style={{
@@ -193,11 +185,11 @@ const DashboardTab: React.FC = () => {
                     }}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation()
-                      handleInstrumentAdd(item)
+                      handleAvionicsAdd(item)
                     }}
                   >
                     <div style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', transform: 'scale(0.5)' }}>
-                      {item.instrumentComponent.getUIElement()}
+                      {item.avionicsComponent.getUIElement()}
                     </div>
                     <div style={GLOBAL_STYLE.GLOBAL_FONT_SECONDARY}>{item.name}</div>
                   </ButtonForMouse>
@@ -210,5 +202,3 @@ const DashboardTab: React.FC = () => {
     </div>
   )
 }
-
-export default DashboardTab

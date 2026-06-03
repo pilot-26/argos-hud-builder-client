@@ -23,6 +23,10 @@ declare global {
       setSize: (id: string, size: { width: number; height: number }) => Promise<void>
       showContextMenu: (id: string) => Promise<void>
     },
+    virtual: {
+      start: (number: number) => Promise<void>
+      stop: () => Promise<void>
+    },
     virtualAPI: {
       connect: () => Promise<void>
       send: (message: any) => Promise<void>
@@ -68,9 +72,14 @@ contextBridge.exposeInMainWorld('overlay', {
 })
 
 contextBridge.exposeInMainWorld('virtualAPI', {
-  connect: () => ipcRenderer.invoke('virtual-api-connect'),
-  send: (message: any) => ipcRenderer.invoke('virtual-api-send', message),
-  disconnect: () => ipcRenderer.invoke('virtual-api-disconnect')
+  connect: () => ipcRenderer.invoke('api-connect'),
+  send: (message: any) => ipcRenderer.invoke('api-send', message),
+  disconnect: () => ipcRenderer.invoke('api-disconnect')
+})
+
+contextBridge.exposeInMainWorld('virtual', {
+  start: (number: number) => ipcRenderer.invoke('start', number),
+  stop: () => ipcRenderer.invoke('stop'),
 })
 
 contextBridge.exposeInMainWorld('inputAPI', {

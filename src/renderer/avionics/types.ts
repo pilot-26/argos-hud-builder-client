@@ -1,17 +1,8 @@
 import { JSX } from "react"
-import { IOverlayTemplate } from "@shared/overlay-types"
 import { IEmbeddedTemplate } from "../embedded/types"
+import { EControlType } from "@shared/avionics-types"
 
-export enum EControlType {
-	AXIS = "AXIS",
-	BUTTON = "BUTTON"
-}
-export interface IControl {
-	id: string
-	type: EControlType
-}
-
-export enum EInstrumentType {
+export enum EAvionicsType {
 	SLIDER = "SLIDER",
 	JOYSTICK = "JOYSTICK",
 	HOLD_BUTTON = "HOLD_BUTTON",
@@ -24,22 +15,21 @@ export enum EInstrumentType {
 	STATIC = "STATIC"
 }
 
-export interface IInstrumentComponentArg {
+export interface IAvionicsComponentArg {
 	params: any,
 	getUIElement: (...args: any[]) => JSX.Element,
 }
 
-export interface IInstrumentComponent {
-	getLogicElement: (arg: IInstrumentComponentArg) => JSX.Element,
+export interface IAvionicsComponent {
+	getLogicElement: (arg: IAvionicsComponentArg) => JSX.Element,
 	getUIElement: (...args: any[]) => JSX.Element,
 }
 
-export interface IInstrumentTemplate {
+export interface IAvionicsTemplate {
 	id: string
 	name: string
-	instrumentComponent: IInstrumentComponent
+	avionicsComponent: IAvionicsComponent
 	controlTypeList?: EControlType[]
 
-	overlayTemplate: IOverlayTemplate
 	embeddedTemplate: IEmbeddedTemplate
 }

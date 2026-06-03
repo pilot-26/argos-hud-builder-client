@@ -10,7 +10,7 @@ export const GLOBAL_COLOR = {
     WHITE: '#FFFFFFFF',
     BLACK: '#000000FF',
     TRANSPARENT: 'transparent',
-    MASK: 'rgba(0, 0, 0, 0.8)',
-    MASK_LIGHT: 'rgba(0, 0, 0, 0.6)',
+    MASK: 'rgba(0, 0, 0, 0.6)',
+    MASK_LIGHT: 'rgba(0, 0, 0, 0.3)',
     CAUTION: '#e75656ff',
    }

@@ -1,0 +1,37 @@
+<mxfile host="Electron" modified="2026-06-03T03:37:00.984Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" etag="KqFcC0hSsxDqA4UYLI2d" version="21.6.5" type="device">
+  <diagram name="第 1 页" id="plokQwkaSKi1ZK1a7Bo8">
+    <mxGraphModel dx="1418" dy="828" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-2" value="Profile1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="340" y="290" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-1" value="Instrument1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-3" value="Instrument2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-6" value="Overlay1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="290" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-7" value="Profile2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="340" y="610" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-8" value="Instrument1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="610" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-9" value="Instrument2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="680" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-11" value="Overlay2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="610" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="3rcAvY7GgyFnovdHHLGV-12" value="Instrument3" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="750" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

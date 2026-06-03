@@ -6,9 +6,10 @@ import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
 import GenericOverlay from './overlay/GenericOverlay'
-import { INSTRUMENT_CONST } from './instrument/const'
-import HUDTab from './tabs/HUDTab'
-import DashboardTab from './tabs/DashboardTab'
+import { RENDERER_CONST } from './const'
+import { PanelComponent } from './panel/PanelComponent'
+import { PanelTab } from './tabs/PanelTab'
+import { PANEL_CONST } from './panel/const'
 
 const styles = {
   tab: {
@@ -23,7 +24,7 @@ const styles = {
 }
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'hud' | 'settings'>('dashboard')
+  const [activeTab, setActiveTab] = useState<'home' | 'settings'>('home')
   const [route, setRoute] = useState<string>("")
   const [ParamObject, setParamObject] = useState<any>({})
 
@@ -54,22 +55,12 @@ const App: React.FC = () => {
   console.log("route = " + route)
   console.log("args = " + JSON.stringify(ParamObject))
   switch (route) {
-    case INSTRUMENT_CONST.INSTRUMENT_ROUTE:
-      const getInstrumentComponent = (templateId: string) => {
-        for (const each of INSTRUMENT_CONST.INSTRUMENT_TEMPLATE_PRESET) {
-          if (templateId === each.id) {
-            return each.instrumentComponent.getLogicElement({
-              params: {...ParamObject, isActive: true},
-              getUIElement: each.instrumentComponent.getUIElement
-            })
-          }
-        }
-      }
+    case PANEL_CONST.PANEL_ROUTE:
       return (
         <GenericOverlay
           overlayId={ParamObject.id}
         >
-          {getInstrumentComponent(ParamObject.templateId)}
+          <PanelComponent panelId={ParamObject.panelId} />
         </GenericOverlay>
       )
   }
@@ -100,27 +91,10 @@ const App: React.FC = () => {
           styleOn={{
             borderBottom: `3px solid ${GLOBAL_COLOR.BRAND}`
           }}
-          pIsOn={activeTab === 'dashboard'}
-          onClick={() => setActiveTab('dashboard')}
+          pIsOn={activeTab === 'home'}
+          onClick={() => setActiveTab('home')}
         >
-          Dashboard
-        </ButtonForMouse>
-        <ButtonForMouse
-          style={{
-            ...styles.tab,
-            color: GLOBAL_COLOR.PRIMARY,
-            borderBottom: `3px solid ${GLOBAL_COLOR.TRANSPARENT}`
-          }}
-          styleHover={{
-            backgroundColor: GLOBAL_COLOR.BRAND_LITE,
-          }}
-          styleOn={{
-            borderBottom: `3px solid ${GLOBAL_COLOR.BRAND}`
-          }}
-          pIsOn={activeTab === 'hud'}
-          onClick={() => setActiveTab('hud')}
-        >
-          HUD
+          Home
         </ButtonForMouse>
         <ButtonForMouse
           style={{
@@ -140,17 +114,8 @@ const App: React.FC = () => {
           Settings
         </ButtonForMouse>
       </div>
-      <div 
-        style={{
-        flex: 1,
-        position: 'relative',
-        overflow: 'hidden'
-        }}
-      >
-        {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'hud' && <HUDTab />}
-        {activeTab === 'settings' && <SettingsTab />}
-      </div>
+      {activeTab === 'home' && <PanelTab />}
+      {activeTab === 'settings' && <SettingsTab />}
     </div>
   )
 }
