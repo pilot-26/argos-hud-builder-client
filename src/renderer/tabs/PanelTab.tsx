@@ -3,10 +3,10 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { PanelStorage } from '../panel/util/penalStorage'
+import { PanelStorage } from '../panel/util/panelStorage'
 import { IPanelTemplate } from '../panel/types'
-import { PanelOption } from '../panel/data/penalOption'
-import { Panel } from '../panel/data/penal'
+import { PanelOption } from '../panel/data/panelOption'
+import { Panel } from '../panel/data/panel'
 import { PanelBlock } from '../panel/PanelBlock'
 import { PANEL_CONST } from '../panel/const'
 
@@ -24,11 +24,11 @@ export const PanelTab: React.FC = () => {
     loadPanel()
   }
 
-  const handleInstrumentAdd = async (item: IPanelTemplate) => {
+  const handlePanelAdd = async (item: IPanelTemplate) => {
     const userParam = {name: "1"}
-    const newInstrumentOption = await new PanelOption(item, userParam).create()
-    const newInstrument = new Panel(newInstrumentOption)
-    await newInstrument.build()
+    const newPanelOption = await new PanelOption(item, userParam).create()
+    const newPanel = new Panel(newPanelOption)
+    await newPanel.sync()
     
     loadPanel()
     
@@ -73,7 +73,7 @@ export const PanelTab: React.FC = () => {
           ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
         }}
         styleHover={{
-          backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+          background: GLOBAL_COLOR.BRAND_LITE,  
         }}
         onClick={handleAdd}
       >
@@ -86,14 +86,14 @@ export const PanelTab: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+          background: GLOBAL_COLOR.TRANSPARENT,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'white',
             borderRadius: GLOBAL_STYLE.GLOBAL_BORDER_RADIUS,
             width: '80%',
             height: '80%',
@@ -128,11 +128,11 @@ export const PanelTab: React.FC = () => {
                       overflow: 'hidden',
                     }}
                     styleHover={{
-                      backgroundColor: GLOBAL_COLOR.MINIMUM,
+                      background: GLOBAL_COLOR.MINIMUM,
                     }}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation()
-                      handleInstrumentAdd(item)
+                      handlePanelAdd(item)
                     }}
                   >
                     <div style={GLOBAL_STYLE.GLOBAL_FONT_SECONDARY}>{item.name}</div>

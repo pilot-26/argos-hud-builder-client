@@ -43,6 +43,13 @@ export class Avionics implements IAvionicsOption {
     return undefined
   }
 
+  async sync() {
+    const newThis = await AvionicsStorage.get(this.id)
+    if (newThis) {
+      Object.assign(this, newThis)
+    }
+  }
+
   async build(): Promise<Avionics> {
     const embedded = await Embedded.getFromId(this.embeddedOptionId)
     if (!embedded) throw new Error()

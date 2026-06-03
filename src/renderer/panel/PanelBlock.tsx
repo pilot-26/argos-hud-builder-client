@@ -3,7 +3,7 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
 import { IOverlayOption } from '@shared/overlay-types'
-import { Panel } from './data/penal'
+import { Panel } from './data/panel'
 
 export const PanelBlock: React.FC<{
 	item: Panel,
@@ -14,14 +14,13 @@ export const PanelBlock: React.FC<{
 }) => {
 	const [isHover, setIsHover] = useState(false)
 	const [isOverlayEnabled, setIsOverlayEnabled] = useState(false)
-	const [isOverlayPinned, setIsOverlayPinned] = useState(false)
 
 	const styles = {
 		panelContent: {
 			padding: '20px',
 		},
 		instrumentControlButton: {
-			backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+			background: GLOBAL_COLOR.TRANSPARENT,
 			color: GLOBAL_COLOR.WHITE,
 			border: "none",
 			padding: GLOBAL_STYLE.GLOBAL_PADDING_SMALL,
@@ -36,57 +35,75 @@ export const PanelBlock: React.FC<{
 	}
 
 	useEffect(() => {
-		window.overlay.receive("on-create", (id: string) => {
-			if (id !== item.overlayOptionId) return
-			setIsOverlayEnabled(true)
-		})
+		// window.overlay.receive("on-create", (id: string) => {
+		// 	if (id !== item.overlayOptionId) return
+		// 	setIsOverlayEnabled(true)
+		// })
 
 		window.overlay.receive("on-close", async (id: string) => {
 			if (id !== item.overlayOptionId) return
 			setIsOverlayEnabled(false)
 		})
 
-		window.overlay.receive("on-pin-change", async (id: string, isPinned: boolean) => {
-			if (id !== item.overlayOptionId) return
-			setIsOverlayPinned(isPinned)
-		})
+		// window.overlay.receive("on-pin-change", async (id: string, isPinned: boolean) => {
+		// 	if (id !== item.overlayOptionId) return
+		// })
 
 		initOverlay()
 	}, [])
 
-	const deleteInstrument = () => {
+	const deletePanel = () => {
 		onDelete?.(item.id)
 	}
 
 	const initOverlay = async () => {
 		if (!item.isOverlayEnabled) return
 
-		enableOverlay(item.overlay.getOption())
+		enableOverlay()
 	}
-	const enableOverlay = async (overlayOption: IOverlayOption) => {
+	const enableOverlay = async () => {
 		setIsOverlayEnabled(true)
 		const args: any = {
 			panelId: item.id
 		}
-		window.overlay.create(overlayOption, args)
+		await item.sync()
+		item.overlay.isPinned = true
 		item.isOverlayEnabled = true
-    item.save()
+		await item.save()
+		await window.storage.flush()
+		window.overlay.create(item.overlay.getOption(), args)
 	}
 
-	const disableOverlay = () => {
+	const disableOverlay = async () => {
 		setIsOverlayEnabled(false)
-		window.overlay.close(item.overlayOptionId)
+		await item.sync()
 		item.isOverlayEnabled = false
-    item.save()
+		await item.save()
+		await window.storage.flush()
+		window.overlay.close(item.overlayOptionId)
 	}
 
-	const handleUserEnableOverlay = async () => {
-		enableOverlay(item.overlay.getOption())
+	const handleCustomize = async () => {
+		await window.storage.flush()
+		window.overlay.close(item.overlayOptionId)
+		
+		const args: any = {
+			panelId: item.id,
+			isEditMode: true
+		}
+		await item.build()
+		item.overlay.isPinned = false
+		item.overlay.isInteractable = true
+		await item.overlay.save()
+		await window.overlay.create(item.overlay.getOption(), args)
 	}
 
-	const handlePin = (isPinned: boolean) => {
-		setIsOverlayPinned(isPinned)
-		window.overlay.pin(item.overlayOptionId, isPinned)
+	const handleShow = () => {
+		enableOverlay()
+	}
+
+	const handleHide = () => {
+		disableOverlay()
 	}
 
 	return (<div
@@ -112,7 +129,7 @@ export const PanelBlock: React.FC<{
 				left: 0,
 				width: '100%',
 				height: '100%',
-				backgroundColor: GLOBAL_COLOR.MASK,
+				background: GLOBAL_COLOR.MASK,
 				backdropFilter: 'blur(10px)',
 				borderRadius: GLOBAL_STYLE.GLOBAL_BORDER_RADIUS_SMALL,
 				display: "flex",
@@ -125,53 +142,40 @@ export const PanelBlock: React.FC<{
 						style={styles.instrumentControlButton}
 						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
-							disableOverlay()
+							handleHide()
 						}}
 					>
-						Disable Overlay
+						Hide
 					</ButtonForMouse>
 				) : (
 					<ButtonForMouse
 						style={styles.instrumentControlButton}
 						styleHover={styles.instrumentControlButtonHover}
 						onClick={() => {
-							handleUserEnableOverlay()
+							handleShow()
 						}}
 					>
-						Enable Overlay
+						Show
 					</ButtonForMouse>
 				)}
-				{isOverlayEnabled && isOverlayPinned && (
-					<ButtonForMouse
-						style={styles.instrumentControlButton}
-						styleHover={styles.instrumentControlButtonHover}
-						onClick={() => {
-							handlePin(false)
-						}}
-					>
-						Unpin
-					</ButtonForMouse>
-				)}
-				{isOverlayEnabled && !isOverlayPinned && (
-					<ButtonForMouse
-						style={styles.instrumentControlButton}
-						styleHover={styles.instrumentControlButtonHover}
-						onClick={() => {
-							handlePin(true)
-						}}
-					>
-						Pin
-					</ButtonForMouse>
-				)}
-				{!isOverlayEnabled && (<ButtonForMouse
+				<ButtonForMouse
 					style={styles.instrumentControlButton}
 					styleHover={styles.instrumentControlButtonHover}
 					onClick={() => {
-						deleteInstrument()
+						handleCustomize()
+					}}
+				>
+					Customize
+				</ButtonForMouse>
+				<ButtonForMouse
+					style={styles.instrumentControlButton}
+					styleHover={styles.instrumentControlButtonHover}
+					onClick={() => {
+						deletePanel()
 					}}
 				>
 					Delete
-				</ButtonForMouse>)}
+				</ButtonForMouse>
 			</div>
 		)}
 		{item.name}

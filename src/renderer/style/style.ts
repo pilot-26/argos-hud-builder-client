@@ -37,7 +37,7 @@ export const GLOBAL_STYLE = {
 		padding: '8px 16px',
 		borderRadius: '6px',
 		border: 'none',
-		backgroundColor: GLOBAL_COLOR.BRAND,
+		background: GLOBAL_COLOR.BRAND,
 		color: GLOBAL_COLOR.WHITE,
 		cursor: 'pointer',
 		transition: 'background-color 0.15s ease'
@@ -46,7 +46,7 @@ export const GLOBAL_STYLE = {
 		padding: '8px 16px',
 		borderRadius: '6px',
 		border: `1px solid ${GLOBAL_COLOR.BRAND}`,
-		backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+		background: GLOBAL_COLOR.TRANSPARENT,
 		color: GLOBAL_COLOR.BRAND,
 		cursor: 'pointer',
 		transition: 'background-color 0.15s ease'
@@ -55,7 +55,7 @@ export const GLOBAL_STYLE = {
 		padding: '8px 16px',
 		borderRadius: '6px',
 		border: 'none',
-		backgroundColor: GLOBAL_COLOR.CAUTION,
+		background: GLOBAL_COLOR.CAUTION,
 		color: GLOBAL_COLOR.WHITE,
 		cursor: 'pointer',
 		transition: 'background-color 0.15s ease'

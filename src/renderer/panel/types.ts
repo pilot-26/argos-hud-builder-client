@@ -7,7 +7,6 @@ export interface IPanelOption {
 	id: string
 	name: string
 	isOverlayEnabled: boolean
-	isLocked: boolean
 	overlayOptionId: string
 	avionicsIdList: string[]
 }

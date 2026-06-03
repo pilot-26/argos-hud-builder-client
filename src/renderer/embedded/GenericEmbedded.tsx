@@ -18,11 +18,13 @@ const RESIZE_HANDLE_SIZE = GLOBAL_STYLE.GLOBAL_PADDING_LARGE_NUM
 export const GenericEmbedded: React.FC<{
   children?: React.ReactNode
   item: Embedded
+  isLocked: boolean
   onResize?: (size: Size) => void
   onMove?: (position: Position) => void
 }> = ({
   children,
   item,
+  isLocked = true,
   onResize,
   onMove
 }) => {
@@ -77,7 +79,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
 
@@ -102,7 +104,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
 
@@ -125,7 +127,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchMove = (e: TouchEvent) => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
     e.preventDefault()
@@ -175,7 +177,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseUp = () => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
     setIsDragging(false)
@@ -184,7 +186,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchEnd = () => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
     setIsDragging(false)
@@ -193,7 +195,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   React.useEffect(() => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
 
@@ -252,7 +254,7 @@ export const GenericEmbedded: React.FC<{
   }, [isDragging, isResizing, handleMouseUp, handleTouchMove, handleTouchEnd, embedded])
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
     
@@ -261,7 +263,7 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseLeave = () => {
-    if (item.isLocked) {
+    if (isLocked) {
       return
     }
 
@@ -279,7 +281,6 @@ export const GenericEmbedded: React.FC<{
         height: size.height,
         overflow: "visible",
         borderRadius: '8px',
-        // pointerEvents: item.isLocked ? "none" : "auto",
         zIndex: 100,
       }}
       onMouseOver={handleMouseEnter}

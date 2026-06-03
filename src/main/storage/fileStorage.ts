@@ -3,6 +3,10 @@ import path from 'path'
 import fs from 'fs'
 
 export class FileStorage {
+  private static cache = new Map<string, any>()
+  private static pendingWrites = new Map<string, NodeJS.Timeout>()
+  private static readonly DEBOUNCE_MS = 500
+
   private static getStorageDir(): string {
     const userDataPath = app.getPath('userData')
     const storageDir = path.join(userDataPath, 'storage')
@@ -19,23 +23,10 @@ export class FileStorage {
     }
   }
 
-  static readJson<T>(filename: string): T | null {
-    console.log("Reading JSON file:", filename)
-    try {
-      const filePath = path.join(FileStorage.getStorageDir(), filename)
-      if (!fs.existsSync(filePath)) {
-        return null
-      }
-      const content = fs.readFileSync(filePath, 'utf-8')
-      return JSON.parse(content) as T
-    } catch (error) {
-      console.error(`Error reading JSON file ${filename}:`, error)
-      return null
-    }
-  }
+  private static doWrite(filename: string): void {
+    const data = FileStorage.cache.get(filename)
+    if (data === undefined) return
 
-  static writeJson<T>(filename: string, data: T): void {
-    console.log("Writing JSON file:", filename)
     try {
       const filePath = path.join(FileStorage.getStorageDir(), filename)
       FileStorage.ensureDirectory(filePath)
@@ -45,8 +36,58 @@ export class FileStorage {
     }
   }
 
+  static readJson<T>(filename: string): T | null {
+    console.log("Reading JSON file:", filename)
+    if (FileStorage.cache.has(filename)) {
+      return FileStorage.cache.get(filename) as T
+    }
+    try {
+      const filePath = path.join(FileStorage.getStorageDir(), filename)
+      if (!fs.existsSync(filePath)) {
+        return null
+      }
+      const content = fs.readFileSync(filePath, 'utf-8')
+      const data = JSON.parse(content) as T
+      FileStorage.cache.set(filename, data)
+      return data
+    } catch (error) {
+      console.error(`Error reading JSON file ${filename}:`, error)
+      return null
+    }
+  }
+
+  static writeJson<T>(filename: string, data: T): void {
+    console.log("Writing JSON file:", filename)
+    FileStorage.cache.set(filename, data)
+
+    if (FileStorage.pendingWrites.has(filename)) {
+      clearTimeout(FileStorage.pendingWrites.get(filename))
+    }
+
+    const timeout = setTimeout(() => {
+      FileStorage.pendingWrites.delete(filename)
+      FileStorage.doWrite(filename)
+    }, FileStorage.DEBOUNCE_MS)
+
+    FileStorage.pendingWrites.set(filename, timeout)
+  }
+
+  static flush(): void {
+    console.log("Flushing all pending writes")
+    for (const [filename, timeout] of FileStorage.pendingWrites) {
+      clearTimeout(timeout)
+      FileStorage.pendingWrites.delete(filename)
+      FileStorage.doWrite(filename)
+    }
+  }
+
   static deleteFile(filename: string): void {
     console.log("Deleting file:", filename)
+    FileStorage.cache.delete(filename)
+    if (FileStorage.pendingWrites.has(filename)) {
+      clearTimeout(FileStorage.pendingWrites.get(filename))
+      FileStorage.pendingWrites.delete(filename)
+    }
     try {
       const filePath = path.join(FileStorage.getStorageDir(), filename)
       if (fs.existsSync(filePath)) {

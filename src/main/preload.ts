@@ -43,6 +43,7 @@ declare global {
       read: (name: string) => Promise<any | undefined>
       delete: (name: string) => Promise<void>
       list: (path: string) => Promise<string[]>
+      flush: () => Promise<void>
     }
   }
 }
@@ -93,5 +94,6 @@ contextBridge.exposeInMainWorld('storage', {
   write: (name: string, data: any) => ipcRenderer.invoke('write', name, data),
   read: (name: string) => ipcRenderer.invoke('read', name),
   delete: (name: string) => ipcRenderer.invoke('delete', name),
-  list: (path: string) => ipcRenderer.invoke('list', path)
+  list: (path: string) => ipcRenderer.invoke('list', path),
+  flush: () => ipcRenderer.invoke('flush')
 })

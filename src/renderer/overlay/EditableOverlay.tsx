@@ -2,15 +2,15 @@ import React, { useEffect, useState, useRef } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import { Overlay } from './data/overlay'
+import ButtonForMouse from '../components/ButtonForMouse'
 
-const GenericOverlay: React.FC<{
+export const EditableOverlay: React.FC<{
 	overlayId: string,
 	children?: React.ReactNode
 }> = ({
 	overlayId,
 	children
 }) => {
-	const [overlay, setOverlay] = useState<Overlay | null>(null)
 	const overlayRef = useRef<Overlay | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
@@ -25,13 +25,13 @@ const GenericOverlay: React.FC<{
 		saveTimeoutRef.current = setTimeout(() => {
 			console.log("saved")
 			overlayRef.current?.save()
-		}, 200)
+		}, 500)
 	}
 
 	const loadOverlay = async () => {
 		const savedOverlay = await Overlay.getFromId(overlayId)
 		if (savedOverlay) {
-			setOverlay(savedOverlay)
+			overlayRef.current = savedOverlay
 			setIsPinned(savedOverlay.isPinned)
 			window.overlay.pin(overlayId, savedOverlay.isPinned)
 			window.overlay.setSize(overlayId, {
@@ -42,12 +42,9 @@ const GenericOverlay: React.FC<{
 				x: savedOverlay.x,
 				y: savedOverlay.y,
 			})
+			window.overlay.maximize(overlayId, savedOverlay.isMaximized)
 		}
 	}
-
-	useEffect(() => {
-		overlayRef.current = overlay
-	}, [overlay])
 
 	useEffect(() => {
 		loadOverlay()
@@ -60,7 +57,7 @@ const GenericOverlay: React.FC<{
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, isPinned })
 			console.log("saved")
-			setOverlay(newOverlay)
+			overlayRef.current = newOverlay
 			setIsPinned(isPinned)
 			debounceSave()
 		})
@@ -70,7 +67,7 @@ const GenericOverlay: React.FC<{
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, width: size.width, height: size.height, x: position.x, y: position.y  })
-			setOverlay(newOverlay)
+			overlayRef.current = newOverlay
 			debounceSave()
 		})
 
@@ -79,7 +76,7 @@ const GenericOverlay: React.FC<{
 			const currentOverlay = overlayRef.current
 			if (!currentOverlay) return
 			const newOverlay = new Overlay({ ...currentOverlay, isMaximized })
-			setOverlay(newOverlay)
+			overlayRef.current = newOverlay
 			debounceSave()
 		})
 	}, [])
@@ -127,62 +124,80 @@ const GenericOverlay: React.FC<{
 		}
 	}
 
+	const handleNext = async () => {
+		window.overlay.pin(overlayId, true)
+	}
+
+	const handleCancel = async () => {
+		window.overlay.close(overlayId)
+	}
+
 	return (
 		<div
 			style={{
 				position: 'absolute',
 				width: '100vw',
 				height: '100vh',
-				background: isPinned ? "transparent" : GLOBAL_COLOR.MASK,
+				background: isPinned ? "transparent" : GLOBAL_COLOR.MASK_LIGHT,
 				border: isPinned ? "1px solid transparent" : `1px solid ${GLOBAL_COLOR.MINIMUM}`,
-				boxSizing: 'border-box'
+				boxSizing: 'border-box',
+				zIndex: 1000,
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
 			}}
-			onMouseOver={() => {setIsHover(true)}}
-			onMouseOut={() => {setIsHover(false)}}
 		>
-			{isHover
-			&& (
-				(overlay?.isInteractable === true && isPinned === false) 
-				|| (overlay?.isInteractable === false)
-			) && (
+			{!isPinned && (
 				<div // RESIZE AREA
 					style={{
-						position: 'absolute',
+						// position: 'absolute',
 						top: 0,
 						left: 0,
 						width: '100vw',
 						height: '100vh',
-						background: GLOBAL_COLOR.MASK_LIGHT,
-						padding: GLOBAL_STYLE.GLOBAL_PADDING,
-
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
 
 						zIndex: 1000,
+
+						gap: GLOBAL_STYLE.GLOBAL_GAP,
+						alignItems: "center",
+						color: GLOBAL_COLOR.MINIMUM,
+						textAlign: "center",
+						alignSelf: "center",
 					}}
 					onMouseDown={(e) => {
 						handleMouseDown(e)
 					}}
 					>
-						<div
+						<div>Left-click to drag</div>
+						<div>Right-click to show menu</div>
+						<ButtonForMouse
 							style={{
-								justifyContent: "center",
-								alignItems: "center",
-								color: GLOBAL_COLOR.MINIMUM,
-								textAlign: "center",
-								alignSelf: "center",
-								width: "50%",
-								whiteSpace: "pre-wrap"
+								...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
 							}}
+							styleHover={{
+								background: GLOBAL_COLOR.BRAND_LITE,  
+							}}
+							onClick={handleNext}
 						>
-							{`Left-click to drag\nRight-click to show menu\nPin after done setting`}
-						</div>
+							Next
+						</ButtonForMouse>
+						<ButtonForMouse
+							style={{
+								...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_NEGATIVE,
+							}}
+							styleHover={{
+								background: GLOBAL_COLOR.MINIMUM,  
+							}}
+							onClick={handleCancel}
+						>
+							Cancel
+						</ButtonForMouse>
 					</div>
 			)}
 			{children}
 		</div>
 	)
 }
-
-export default GenericOverlay

@@ -4,7 +4,7 @@ export class TitleBarStyle {
         justifyContent: 'space-between',
         alignItems: 'center',
         height: '32px',
-        backgroundColor: '#1e293b',
+        background: '#1e293b',
         borderBottom: '1px solid #334155',
     }
 
@@ -41,18 +41,18 @@ export class TitleBarStyle {
         alignItems: 'center',
         justifyContent: 'center',
         border: 'none',
-        backgroundColor: 'transparent',
+        background: 'transparent',
         cursor: 'pointer',
         color: '#94a3b8',
         transition: 'background-color 0.15s ease'
     }
 
     static readonly titleBarButtonHoverStyle: React.CSSProperties = {
-        backgroundColor: '#334155'
+        background: '#334155'
     }
 
     static readonly closeButtonHoverStyle: React.CSSProperties = {
-        backgroundColor: '#ef4444',
+        background: '#ef4444',
         color: '#f8fafc'
     }
 }

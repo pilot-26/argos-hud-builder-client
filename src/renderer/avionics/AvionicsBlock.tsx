@@ -8,9 +8,11 @@ import { Avionics } from './data/avionics'
 
 const AvionicsBlock: React.FC<{
 	item: Avionics,
+  isLocked: boolean,
 	onDelete?: (id: string) => void
 }> = ({
 	item,
+	isLocked = true,
 	onDelete
 }) => {
 	const [isHover, setIsHover] = useState(false)
@@ -20,7 +22,7 @@ const AvionicsBlock: React.FC<{
       padding: '20px',
     },
     instrumentControlButton: {
-      backgroundColor: GLOBAL_COLOR.TRANSPARENT,
+      background: GLOBAL_COLOR.TRANSPARENT,
       color: GLOBAL_COLOR.WHITE,
       border: "none",
       padding: GLOBAL_STYLE.GLOBAL_PADDING_SMALL,
@@ -36,9 +38,10 @@ const AvionicsBlock: React.FC<{
 
 	return (
     <GenericEmbedded 
-      item={item.embedded} 
+      item={item.embedded}
+      isLocked={isLocked}
     >
-      {!item.embedded.isLocked && (
+      {!isLocked && (
         <div
           style={{
             position: 'absolute',

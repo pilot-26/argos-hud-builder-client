@@ -3,7 +3,6 @@ import { EmbeddedStorage } from "../util/embeddedStorage"
 
 export class Embedded implements IEmbeddedOption {
   id: string
-  isLocked: boolean
   width: number
   height: number
   x: number
@@ -17,7 +16,6 @@ export class Embedded implements IEmbeddedOption {
 
   constructor(option: IEmbeddedOption) {
     this.id = option.id
-    this.isLocked = option.isLocked
     this.width = option.width
     this.height = option.height
     this.x = option.x
@@ -40,7 +38,6 @@ export class Embedded implements IEmbeddedOption {
   getOption(): IEmbeddedOption {
     return {
       id: this.id,
-      isLocked: this.isLocked,
       width: this.width,
       height: this.height,
       x: this.x,

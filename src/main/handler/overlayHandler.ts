@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, screen } from 'electron'
 import path from 'path'
 import { MAIN_CONST } from '../const'
 import { WindowManager } from '../windowManager'
@@ -90,9 +90,14 @@ ipcMain.handle('create', (
     const [x, y] = browserWindow.getPosition()
     const currentOption = optionMap.get(overlayOption.id)
     if (currentOption) {
-      if (currentOption.isMaximized) return
-      optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
-      onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
+      if (currentOption.isMaximized) {
+        optionMap.set(overlayOption.id, { ...currentOption, width: currentOption.width, height: currentOption.height, x, y })
+        onSizePositionChange(browserWindow, overlayOption.id, {width: currentOption.width, height: currentOption.height}, { x, y })
+
+      } else {
+        optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
+        onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
+      }
     }
   })
 
@@ -208,11 +213,12 @@ function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: bool
       optionMap.set(id, overlayOption)
     }
 
-    const { screen } = require('electron')
-    const primaryDisplay = screen.getPrimaryDisplay()
-    const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize
+    const winBounds = overlayWindow.getBounds()
+    const display = screen.getDisplayMatching(winBounds)
+    const { width: screenWidth, height: screenHeight } = display.workAreaSize
     overlayWindow.setSize(screenWidth, screenHeight)
-    overlayWindow.setPosition(0, 0)
+    overlayWindow.setPosition(display.bounds.x, display.bounds.y)
+    console.log(display.bounds.x, display.bounds.y)
   } else {
     if (overlayOption) {
       overlayOption.isMaximized = false
@@ -284,11 +290,6 @@ ipcMain.on("show-context-menu", (
   }
   const list = []
   const overlayOption = optionMap.get(id)
-  if (overlayOption?.isPinned) {
-    list.push(unpinItem)
-  } else {
-    list.push(pinItem)
-  }
   if (overlayOption?.isMaximized) {
     list.push(restoreItem)
   } else {

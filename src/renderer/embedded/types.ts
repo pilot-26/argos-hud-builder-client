@@ -13,5 +13,4 @@ export interface IEmbeddedTemplate {
 
 export interface IEmbeddedOption extends IEmbeddedTemplate {
   id: string
-  isLocked: boolean
 }

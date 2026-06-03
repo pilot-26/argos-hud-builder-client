@@ -16,3 +16,7 @@ ipcMain.handle("delete", (event, name: string) => {
 ipcMain.handle("list", (event, path: string) => {
   return FileStorage.listDirectory(path) || []
 })
+
+ipcMain.handle("flush", () => {
+  FileStorage.flush()
+})

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { OverlayOption } from '../../overlay/data/overlayOption'
 import { IOverlayTemplate } from '@shared/overlay-types'
 import { IPanelOption, IPanelTemplate, IPanelUserParam } from '../types'
-import { PanelStorage } from '../util/penalStorage'
+import { PanelStorage } from '../util/panelStorage'
 
 /**
  * For making a new HUD option from the template

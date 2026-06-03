@@ -30,18 +30,18 @@ export class ModalTitleBarStyle {
 		alignItems: 'center',
 		justifyContent: 'center',
 		border: 'none',
-		backgroundColor: 'transparent',
+		background: 'transparent',
 		cursor: 'pointer',
 		color: '#94a3b8',
 		transition: 'background-color 0.15s ease'
 	}
 
 	static readonly titleBarButtonHoverStyle: React.CSSProperties = {
-		backgroundColor: '#334155'
+		background: '#334155'
 	}
 
 	static readonly closeButtonHoverStyle: React.CSSProperties = {
-		backgroundColor: '#ef4444',
+		background: '#ef4444',
 		color: '#f8fafc'
 	}
 }

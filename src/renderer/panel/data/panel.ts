@@ -1,6 +1,6 @@
 import { IPanelOption } from "../types"
 import { Overlay } from "../../overlay/data/overlay"
-import { PanelStorage } from "../util/penalStorage"
+import { PanelStorage } from "../util/panelStorage"
 import { Avionics } from "../../avionics/data/avionics"
 import { IAvionicsTemplate } from "../../avionics/types"
 import { AvionicsOption } from "../../avionics/data/avionicsOption"
@@ -13,7 +13,6 @@ export class Panel implements IPanelOption {
   id: string
   name: string
   isOverlayEnabled: boolean
-  isLocked: boolean
 
   overlayOptionId: string
   overlay!: Overlay
@@ -26,26 +25,35 @@ export class Panel implements IPanelOption {
     this.name = param.name
     this.overlayOptionId = param.overlayOptionId
     this.isOverlayEnabled = param.isOverlayEnabled
-    this.isLocked = param.isLocked
+    this.avionicsIdList = param.avionicsIdList
   }
 
   static async getFromId(id: string) {
     return await PanelStorage.get(id)
   }
 
+  async sync() {
+    const newThis = await PanelStorage.get(this.id)
+    if (newThis) {
+      Object.assign(this, newThis)
+    }
+    await this.build()
+  }
+
   async build(): Promise<Panel> {
+    this.avionicsList = []
+    console.log("this.avionicsIdList = " + JSON.stringify(this.avionicsIdList))
     for (const each of this.avionicsIdList) {
+      console.log("each = " + each)
       const avionics = await Avionics.getFromId(each)
       if (avionics) {
+        await avionics.build()
         this.avionicsList.push(avionics)
       }
     }
 
     const overlay = await Overlay.getFromId(this.overlayOptionId)
-    if (!overlay) {
-      throw new Error("OVERLAY NOT FOUND")
-    }
-    this.overlay = overlay
+    this.overlay = overlay!
 
     return this
   }
@@ -57,7 +65,6 @@ export class Panel implements IPanelOption {
       isOverlayEnabled: this.isOverlayEnabled,
       overlayOptionId: this.overlayOptionId,
       avionicsIdList: this.avionicsIdList,
-      isLocked: this.isLocked,
     }
   }
 
@@ -66,6 +73,9 @@ export class Panel implements IPanelOption {
     const newAvionics = new Avionics(newAvionicsOption)
     await newAvionics.build()
     this.avionicsIdList.push(newAvionics.id)
+    this.avionicsList.push(newAvionics)
+    await this.save()
+    console.log("this.avionicsIdList = " + JSON.stringify(this.avionicsIdList))
   }
 
   async removeAvionics(id: string) {
@@ -75,10 +85,10 @@ export class Panel implements IPanelOption {
   }
 
   async save() {
-    await this.overlay.save()
     for (const each of this.avionicsList) {
       await each.save()
     }
+    await this.overlay.save()
     await PanelStorage.set(this)
   }
 }
