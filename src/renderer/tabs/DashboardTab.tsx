@@ -9,14 +9,22 @@ import { DashboardStorage } from '../dashboard/util/dashboardStorage'
 import { Dashboard } from '../dashboard/data/dashboard'
 import { DashboardOption } from '../dashboard/data/dashboardOption'
 import DashboardBlock from '../dashboard/DashboardBlock'
+import { F14Dash } from '../dashboard/background/F14Dash'
 
 const DashboardTab: React.FC = () => {
+  const [showBackgroundModal, setBackgroundModal] = React.useState(false)
   const [showAddModal, setShowAddModal] = React.useState(false)
   const [isLocked, setIsLocked] = React.useState(false)
   const [selectedInstrumentList, setSelectedInstrumentList] = React.useState<Dashboard[]>([])
 
   const loadInstrument = async () => {
     const saved = await DashboardStorage.list()
+    for (const item of saved) {
+      if (item.embedded.isLocked) {
+        setIsLocked(true)
+        break
+      }
+    }
     setSelectedInstrumentList(saved)
   }
 
@@ -55,6 +63,10 @@ const DashboardTab: React.FC = () => {
     }
     setSelectedInstrumentList(selectedInstrumentList)
   }
+  const handleBackground = () => {
+
+  }
+
   const handleAdd = () => {
     setShowAddModal(true)
   }
@@ -68,6 +80,7 @@ const DashboardTab: React.FC = () => {
           onDelete={handleInstrumentDelete}
         />
       ))}
+      <F14Dash />
       <div
         style={{
           position: 'absolute',
@@ -79,6 +92,17 @@ const DashboardTab: React.FC = () => {
           gap: '8px'
         }}
       >
+        <ButtonForMouse
+          style={{
+            ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
+          }}
+          styleHover={{
+            backgroundColor: GLOBAL_COLOR.BRAND_LITE,  
+          }}
+          onClick={handleUnlock}
+        >
+          Background
+        </ButtonForMouse>
         {isLocked ? (
           <ButtonForMouse
             style={{

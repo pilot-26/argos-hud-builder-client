@@ -4,7 +4,7 @@ import { GenericEmbedded } from '../embedded/GenericEmbedded'
 import { GLOBAL_STYLE } from '../style/style'
 import ButtonForMouse from '../components/ButtonForMouse'
 import { GLOBAL_COLOR } from '../style/color'
-import { AiFillCloseCircle } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai"
 
 const DashboardBlock: React.FC<{
 	item: Dashboard,
