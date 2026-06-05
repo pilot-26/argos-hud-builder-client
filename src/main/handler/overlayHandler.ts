@@ -132,8 +132,12 @@ ipcMain.handle('create', (
 })
 
 const close = (id: string) => {
-  const overlayWindow = getBrowserWindow(id)
-  overlayWindow.close()
+  try {
+    const overlayWindow = getBrowserWindow(id)
+    overlayWindow.close()
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 ipcMain.handle('close', (event, id: string) => {
@@ -290,6 +294,11 @@ ipcMain.on("show-context-menu", (
   }
   const list = []
   const overlayOption = optionMap.get(id)
+  if (overlayOption?.isPinned) {
+    list.push(unpinItem)
+  } else {
+    list.push(pinItem)
+  }
   if (overlayOption?.isMaximized) {
     list.push(restoreItem)
   } else {

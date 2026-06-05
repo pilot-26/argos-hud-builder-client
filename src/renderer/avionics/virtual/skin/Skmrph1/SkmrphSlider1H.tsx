@@ -41,7 +41,6 @@ export const SkmrphSlider1V: React.FC<{
       alignItems: 'center',
       gap: '40px',
       background: 'transparent',
-      padding: '20px',
       boxSizing: 'border-box'
     }}>
       <div style={{
@@ -194,7 +193,7 @@ export const SkmrphSlider1V: React.FC<{
           }}>
             <div style={{
               fontFamily: '"Consolas", "Monaco", monospace',
-              fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+              fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
               color: '#3a4a5a',
               letterSpacing: '1px'
             }}>MIN</div>
@@ -206,7 +205,7 @@ export const SkmrphSlider1V: React.FC<{
             </div>
             <div style={{
               fontFamily: '"Consolas", "Monaco", monospace',
-              fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+              fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
               color: '#3a4a5a',
               letterSpacing: '1px'
             }}>MAX</div>

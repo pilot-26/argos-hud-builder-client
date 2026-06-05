@@ -192,7 +192,7 @@ export const SkmrphSlider1V: React.FC<{
           }}>
             <div style={{
               fontFamily: '"Consolas", "Monaco", monospace',
-              fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+              fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
               color: SKMRPH1_STYLES.textMarkingColor,
               letterSpacing: '1px'
             }}>MAX</div>
@@ -204,7 +204,7 @@ export const SkmrphSlider1V: React.FC<{
             </div>
             <div style={{
               fontFamily: '"Consolas", "Monaco", monospace',
-              fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+              fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
               color: '#3a4a5a',
               letterSpacing: '1px'
             }}>MIN</div>

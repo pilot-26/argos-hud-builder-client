@@ -2,10 +2,13 @@ import React, { useEffect } from 'react'
 import { Panel } from './data/panel'
 import { Avionics } from '../avionics/data/avionics'
 import AvionicsBlock from '../avionics/AvionicsBlock'
+import { OverlayLowProfile } from '../overlay/OverlayLowProfile'
 
 export const PanelComponent: React.FC<{
+  overlayId: string,
   panelId: string
 }> = ({
+  overlayId,
   panelId
 }) => {
   const [selectedAvionicsList, setSelectedAvionicsList] = React.useState<Avionics[]>([])
@@ -22,22 +25,26 @@ export const PanelComponent: React.FC<{
   }, [])
 
   return (
-    <div
-      style={{
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
+    <OverlayLowProfile
+      overlayId={overlayId}
     >
-      {selectedAvionicsList.map((item) => (
-        <AvionicsBlock
-          key={item.id}
-          isLocked={true}
-          item={item}
-        />
-      ))}
-    </div>
+      <div
+        style={{
+          flex: 1,
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {selectedAvionicsList.map((item) => (
+          <AvionicsBlock
+            key={item.id}
+            isLocked={true}
+            item={item}
+          />
+        ))}
+      </div>
+    </OverlayLowProfile>
   )
 }

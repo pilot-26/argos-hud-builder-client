@@ -2,9 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import { Overlay } from './data/overlay'
-import ButtonForMouse from '../components/ButtonForMouse'
 
-export const EditableOverlay: React.FC<{
+export const OverlayLowProfile: React.FC<{
 	overlayId: string,
 	children?: React.ReactNode
 }> = ({
@@ -14,7 +13,6 @@ export const EditableOverlay: React.FC<{
 	const overlayRef = useRef<Overlay | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
-	const [isHover, setIsHover] = useState(false)
 	const [isPinned, setIsPinned] = useState(false)
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -120,16 +118,7 @@ export const EditableOverlay: React.FC<{
 			case 2:
 				window.overlay.showContextMenu(overlayId)
 				return
-
 		}
-	}
-
-	const handleNext = async () => {
-		window.overlay.pin(overlayId, true)
-	}
-
-	const handleCancel = async () => {
-		window.overlay.close(overlayId)
 	}
 
 	return (
@@ -138,19 +127,16 @@ export const EditableOverlay: React.FC<{
 				position: 'absolute',
 				width: '100vw',
 				height: '100vh',
-				background: isPinned ? "transparent" : GLOBAL_COLOR.MASK_LIGHT,
-				border: isPinned ? "1px solid transparent" : `1px solid ${GLOBAL_COLOR.MINIMUM}`,
 				boxSizing: 'border-box',
-				zIndex: 1000,
 				display: "flex",
 				flexDirection: "column",
 				justifyContent: "center",
 			}}
 		>
 			{!isPinned && (
-				<div // RESIZE AREA
+				<div
 					style={{
-						// position: 'absolute',
+						position: 'absolute',
 						top: 0,
 						left: 0,
 						width: '100vw',
@@ -171,31 +157,7 @@ export const EditableOverlay: React.FC<{
 						handleMouseDown(e)
 					}}
 					>
-						<div>Left-click to drag</div>
-						<div>Right-click to show menu</div>
-						<ButtonForMouse
-							style={{
-								...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
-							}}
-							styleHover={{
-								background: GLOBAL_COLOR.BRAND_LITE,  
-							}}
-							onClick={handleNext}
-						>
-							Next
-						</ButtonForMouse>
-						<ButtonForMouse
-							style={{
-								...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_NEGATIVE,
-							}}
-							styleHover={{
-								background: GLOBAL_COLOR.MINIMUM,  
-							}}
-							onClick={handleCancel}
-						>
-							Cancel
-						</ButtonForMouse>
-					</div>
+        </div>
 			)}
 			{children}
 		</div>

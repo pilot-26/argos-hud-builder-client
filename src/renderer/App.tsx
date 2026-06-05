@@ -5,7 +5,6 @@ import TitleBar from './components/TitleBar'
 import { GLOBAL_COLOR } from './style/color'
 import ButtonForMouse from './components/ButtonForMouse'
 import { GLOBAL_STYLE } from './style/style'
-import { EditableOverlay } from './overlay/EditableOverlay'
 import { PanelComponent } from './panel/PanelComponent'
 import { PanelTab } from './tabs/PanelTab'
 import { PANEL_CONST } from './panel/const'
@@ -18,7 +17,7 @@ const styles = {
     border: 'none',
     background: 'transparent',
     cursor: 'pointer',
-    fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+    fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
     transition: 'all 0.2s ease',
   },
 }
@@ -57,15 +56,11 @@ const App: React.FC = () => {
   switch (route) {
     case PANEL_CONST.PANEL_ROUTE:
       return (
-        <EditableOverlay
-          overlayId={paramObject.id}
-        >
-          {(paramObject.isEditMode) ? (
-            <PanelEditComponent panelId={paramObject.panelId} />
-          ) : (
-            <PanelComponent panelId={paramObject.panelId} />
-          )}
-        </EditableOverlay>
+        (paramObject.isEditMode) ? (
+          <PanelEditComponent overlayId={paramObject.id}  panelId={paramObject.panelId} />
+        ) : (
+          <PanelComponent overlayId={paramObject.id} panelId={paramObject.panelId} />
+        )
       )
   }
 

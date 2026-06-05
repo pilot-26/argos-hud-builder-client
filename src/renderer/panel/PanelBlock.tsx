@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { IOverlayOption } from '@shared/overlay-types'
 import { Panel } from './data/panel'
 
 export const PanelBlock: React.FC<{
@@ -26,29 +25,19 @@ export const PanelBlock: React.FC<{
 			padding: GLOBAL_STYLE.GLOBAL_PADDING_SMALL,
 			fontWeight: "normal",
 			lineHeight: "20px",
-			fontSize: GLOBAL_STYLE.GLOBAL_FONT_SECONDARY.fontSize,
+			fontSize: GLOBAL_STYLE.GLOBAL_TEXT_SECONDARY.fontSize,
 		},
 		instrumentControlButtonHover: {
 			fontWeight: "bold",
-			fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
+			fontSize: GLOBAL_STYLE.GLOBAL_TEXT_PRIMARY.fontSize,
 		}
 	}
 
 	useEffect(() => {
-		// window.overlay.receive("on-create", (id: string) => {
-		// 	if (id !== item.overlayOptionId) return
-		// 	setIsOverlayEnabled(true)
-		// })
-
 		window.overlay.receive("on-close", async (id: string) => {
 			if (id !== item.overlayOptionId) return
 			setIsOverlayEnabled(false)
 		})
-
-		// window.overlay.receive("on-pin-change", async (id: string, isPinned: boolean) => {
-		// 	if (id !== item.overlayOptionId) return
-		// })
-
 		initOverlay()
 	}, [])
 
@@ -63,10 +52,13 @@ export const PanelBlock: React.FC<{
 	}
 	const enableOverlay = async () => {
 		setIsOverlayEnabled(true)
+
+		await window.storage.flush()
+		await window.overlay.close(item.overlayOptionId)
+		await item.sync()
 		const args: any = {
 			panelId: item.id
 		}
-		await item.sync()
 		item.overlay.isPinned = true
 		item.isOverlayEnabled = true
 		await item.save()
@@ -85,13 +77,13 @@ export const PanelBlock: React.FC<{
 
 	const handleCustomize = async () => {
 		await window.storage.flush()
-		window.overlay.close(item.overlayOptionId)
+		await window.overlay.close(item.overlayOptionId)
 		
+		await item.build()
 		const args: any = {
 			panelId: item.id,
 			isEditMode: true
 		}
-		await item.build()
 		item.overlay.isPinned = false
 		item.overlay.isInteractable = true
 		await item.overlay.save()

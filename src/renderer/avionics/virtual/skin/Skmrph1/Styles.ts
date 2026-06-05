@@ -1,7 +1,6 @@
 export const SKMRPH1_STYLES = {
   frameBackground: 'linear-gradient(145deg, #2a2a3a 0%, #1a1a28 50%, #0f0f1a 100%)',
   frameShadow:`
-    0 0 0 4px #1a1a28,
     0 6px 15px rgba(0, 0, 0, 0.8),
     0 2px 5px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),

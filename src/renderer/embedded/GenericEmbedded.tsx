@@ -13,7 +13,12 @@ interface Size {
   height: number
 }
 
-const RESIZE_HANDLE_SIZE = GLOBAL_STYLE.GLOBAL_PADDING_LARGE_NUM
+const RESIZE_HANDLE_SIZE = GLOBAL_STYLE.GLOBAL_PADDING_NUM
+const GRID_SIZE = 10
+
+const snapToGrid = (value: number): number => {
+  return Math.round(value / GRID_SIZE) * GRID_SIZE
+}
 
 export const GenericEmbedded: React.FC<{
   children?: React.ReactNode
@@ -29,7 +34,6 @@ export const GenericEmbedded: React.FC<{
   onMove
 }) => {
   const [embedded, setEmbedded] = useState(item)
-  const [isHovered, setIsHovered] = useState(false)
   const [position, setPosition] = useState<Position>({ x: item.x, y: item.y })
   const [size, setSize] = useState<Size>({ width: item.width, height: item.height })
   const [isDragging, setIsDragging] = useState(false)
@@ -42,6 +46,7 @@ export const GenericEmbedded: React.FC<{
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const debounceSave = (embeddedToSave: Embedded) => {
+    console.log("debounceSave")
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
@@ -84,7 +89,6 @@ export const GenericEmbedded: React.FC<{
     }
 
     e.preventDefault()
-    setIsHovered(true)
 
     if ((e.target as HTMLElement).classList.contains('resize-handle')) return
 
@@ -109,7 +113,6 @@ export const GenericEmbedded: React.FC<{
     }
 
     e.preventDefault()
-    setIsHovered(true)
 
     const direction = getResizeDirection(e)
     if (direction) {
@@ -133,8 +136,8 @@ export const GenericEmbedded: React.FC<{
     e.preventDefault()
     
     if (isDragging) {
-      const newX = e.touches[0].clientX - dragStartRef.current.x
-      const newY = e.touches[0].clientY - dragStartRef.current.y
+      const newX = snapToGrid(e.touches[0].clientX - dragStartRef.current.x)
+      const newY = snapToGrid(e.touches[0].clientY - dragStartRef.current.y)
       const x = Math.max(0, newX)
       const y = Math.max(0, newY)
       setPosition({ x, y })
@@ -152,17 +155,17 @@ export const GenericEmbedded: React.FC<{
       let newY = initialPositionRef.current.y
 
       if (resizeDirection.includes('e')) {
-        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
+        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, snapToGrid(initialSizeRef.current.width + deltaX)))
       }
       if (resizeDirection.includes('w')) {
-        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
+        newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, snapToGrid(initialSizeRef.current.width - deltaX)))
         newX = initialPositionRef.current.x + (initialSizeRef.current.width - newWidth)
       }
       if (resizeDirection.includes('s')) {
-        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
+        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, snapToGrid(initialSizeRef.current.height + deltaY)))
       }
       if (resizeDirection.includes('n')) {
-        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
+        newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, snapToGrid(initialSizeRef.current.height - deltaY)))
         newY = initialPositionRef.current.y + (initialSizeRef.current.height - newHeight)
       }
 
@@ -201,10 +204,15 @@ export const GenericEmbedded: React.FC<{
 
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        const newX = e.clientX - dragStartRef.current.x
-        const newY = e.clientY - dragStartRef.current.y
-        setPosition({ x: Math.max(0, newX), y: Math.max(0, newY) })
-        onMove?.({ x: Math.max(0, newX), y: Math.max(0, newY) })
+        const newX = snapToGrid(e.clientX - dragStartRef.current.x)
+        const newY = snapToGrid(e.clientY - dragStartRef.current.y)
+        const x = Math.max(0, newX)
+        const y = Math.max(0, newY)
+        setPosition({ x, y })
+        onMove?.({ x, y })
+
+        setEmbedded(new Embedded({...embedded, x, y}))
+        debounceSave(embedded)
       } else if (isResizing && resizeDirection) {
         const deltaX = e.clientX - dragStartRef.current.x
         const deltaY = e.clientY - dragStartRef.current.y
@@ -215,17 +223,17 @@ export const GenericEmbedded: React.FC<{
         let newY = initialPositionRef.current.y
 
         if (resizeDirection.includes('e')) {
-          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width + deltaX))
+          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, snapToGrid(initialSizeRef.current.width + deltaX)))
         }
         if (resizeDirection.includes('w')) {
-          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, initialSizeRef.current.width - deltaX))
+          newWidth = Math.max(item.minWidth ?? 0, Math.min(item.maxWidth ?? Infinity, snapToGrid(initialSizeRef.current.width - deltaX)))
           newX = initialPositionRef.current.x + (initialSizeRef.current.width - newWidth)
         }
         if (resizeDirection.includes('s')) {
-          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height + deltaY))
+          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, snapToGrid(initialSizeRef.current.height + deltaY)))
         }
         if (resizeDirection.includes('n')) {
-          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, initialSizeRef.current.height - deltaY))
+          newHeight = Math.max(item.minHeight ?? 0, Math.min(item.maxHeight ?? Infinity, snapToGrid(initialSizeRef.current.height - deltaY)))
           newY = initialPositionRef.current.y + (initialSizeRef.current.height - newHeight)
         }
 
@@ -259,15 +267,6 @@ export const GenericEmbedded: React.FC<{
     }
     
     e.preventDefault()
-    setIsHovered(true)
-  }
-
-  const handleMouseLeave = () => {
-    if (isLocked) {
-      return
-    }
-
-    setIsHovered(false)
   }
 
   return (
@@ -281,14 +280,13 @@ export const GenericEmbedded: React.FC<{
         height: size.height,
         overflow: "visible",
         borderRadius: '8px',
-        zIndex: 100,
+        boxSizing: 'border-box',
       }}
       onMouseOver={handleMouseEnter}
-      onMouseOut={handleMouseLeave}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
     >
-      {isHovered && <div
+      {!isLocked && <div
         style={{
           position: "absolute",
           top: 0,
@@ -296,7 +294,7 @@ export const GenericEmbedded: React.FC<{
           right: 0,
           bottom: 0,
           background: "rgba(0, 0, 0, 0.5)",
-          zIndex: 998,
+          zIndex: 99,
           border: `2px dashed ${GLOBAL_COLOR.MINIMUM}`,
           padding: RESIZE_HANDLE_SIZE,
         }}
@@ -307,7 +305,6 @@ export const GenericEmbedded: React.FC<{
             height: "100%",
             border: `2px dashed ${GLOBAL_COLOR.MINIMUM}`,
             background: "rgba(0, 0, 0, 0.5)",
-            zIndex: 999,
             color: GLOBAL_COLOR.MINIMUM,
             display: "flex",
             justifyContent: "center",
@@ -429,7 +426,7 @@ export const GenericEmbedded: React.FC<{
         overflow: "visible",
         width: '100%',
         height: '100%',
-        padding: '12px',
+        boxSizing: 'border-box',
       }}>
         {children}
       </div>

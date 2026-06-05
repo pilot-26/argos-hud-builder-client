@@ -17,25 +17,6 @@ const AvionicsBlock: React.FC<{
 }) => {
 	const [isHover, setIsHover] = useState(false)
 
-  const styles = {
-    panelContent: {
-      padding: '20px',
-    },
-    instrumentControlButton: {
-      background: GLOBAL_COLOR.TRANSPARENT,
-      color: GLOBAL_COLOR.WHITE,
-      border: "none",
-      padding: GLOBAL_STYLE.GLOBAL_PADDING_SMALL,
-      fontWeight: "normal",
-      lineHeight: "20px",
-      fontSize: GLOBAL_STYLE.GLOBAL_FONT_SECONDARY.fontSize,
-    },
-    instrumentControlButtonHover: {
-      fontWeight: "bold",
-      fontSize: GLOBAL_STYLE.GLOBAL_FONT_PRIMARY.fontSize,
-    }
-  }
-
 	return (
     <GenericEmbedded 
       item={item.embedded}
@@ -54,6 +35,7 @@ const AvionicsBlock: React.FC<{
             justifyContent: 'center',
             alignItems: 'center',
             gap: GLOBAL_STYLE.GLOBAL_GAP,
+            boxSizing: 'border-box',
           }}
           onMouseOver={() => setIsHover(true)}
           onMouseOut={() => setIsHover(false)}
@@ -61,15 +43,13 @@ const AvionicsBlock: React.FC<{
           <div
             style={{
               position: 'absolute',
-              // top: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
-              // right: `${GLOBAL_STYLE.GLOBAL_PADDING_LARGE}`,
               top: 0,
               right: 0,
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               gap: '8px',
-              zIndex: 1000,
+              zIndex: 120,
             }}
           >
             <ButtonForMouse

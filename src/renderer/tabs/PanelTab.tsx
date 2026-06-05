@@ -135,7 +135,7 @@ export const PanelTab: React.FC = () => {
                       handlePanelAdd(item)
                     }}
                   >
-                    <div style={GLOBAL_STYLE.GLOBAL_FONT_SECONDARY}>{item.name}</div>
+                    <div style={GLOBAL_STYLE.GLOBAL_TEXT_SECONDARY}>{item.name}</div>
                   </ButtonForMouse>
                 ))}
               </div>
