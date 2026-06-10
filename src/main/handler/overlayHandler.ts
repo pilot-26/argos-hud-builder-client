@@ -294,11 +294,11 @@ ipcMain.on("show-context-menu", (
   }
   const list = []
   const overlayOption = optionMap.get(id)
-  if (overlayOption?.isPinned) {
-    list.push(unpinItem)
-  } else {
-    list.push(pinItem)
-  }
+  // if (overlayOption?.isPinned) {
+  //   list.push(unpinItem)
+  // } else {
+  //   list.push(pinItem)
+  // }
   if (overlayOption?.isMaximized) {
     list.push(restoreItem)
   } else {

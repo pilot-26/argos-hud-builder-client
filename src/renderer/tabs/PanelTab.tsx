@@ -29,6 +29,7 @@ export const PanelTab: React.FC = () => {
     const newPanelOption = await new PanelOption(item, userParam).create()
     const newPanel = new Panel(newPanelOption)
     await newPanel.sync()
+    await window.storage.flush()
     
     loadPanel()
     
