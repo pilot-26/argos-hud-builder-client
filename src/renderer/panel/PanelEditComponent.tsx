@@ -94,35 +94,17 @@ export const PanelEditComponent: React.FC<{
           zIndex: 1001,
         }}
       >
-        <div
+        <ButtonForMouse
           style={{
-            fontWeight: (editStage === EDIT_STAGE.PLACEMENT ? "bold" : "normal"),
-            textDecoration: (editStage === EDIT_STAGE.PLACEMENT ? "underline" : "none"),
+            ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
           }}
-        >
-          Placement
-        </div>
-        <div
-          style={{
-            fontWeight: (editStage === EDIT_STAGE.CONTENT ? "bold" : "normal"),
-            textDecoration: (editStage === EDIT_STAGE.CONTENT ? "underline" : "none"),
+          styleHover={{
+            background: GLOBAL_COLOR.BRAND_LITE,
           }}
+          onClick={handleDone}
         >
-          Content
-        </div>
-        {editStage === EDIT_STAGE.CONTENT && (
-          <ButtonForMouse
-            style={{
-              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_NEGATIVE,
-            }}
-            styleHover={{
-              background: GLOBAL_COLOR.BRAND_LITE,
-            }}
-            onClick={handlePrevious}
-          >
-            Previous
-          </ButtonForMouse>
-        )}
+          Done
+        </ButtonForMouse>
         {editStage === EDIT_STAGE.PLACEMENT && (
           <ButtonForMouse
             style={{
@@ -136,17 +118,19 @@ export const PanelEditComponent: React.FC<{
             Next
           </ButtonForMouse>
         )}
-        <ButtonForMouse
-          style={{
-            ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_POSITIVE,
-          }}
-          styleHover={{
-            background: GLOBAL_COLOR.BRAND_LITE,
-          }}
-          onClick={handleDone}
-        >
-          Done
-        </ButtonForMouse>
+        {editStage === EDIT_STAGE.CONTENT && (
+          <ButtonForMouse
+            style={{
+              ...GLOBAL_STYLE.GLOBAL_BUTTON_TEXT_NEGATIVE,
+            }}
+            styleHover={{
+              background: GLOBAL_COLOR.BRAND_LITE,
+            }}
+            onClick={handlePrevious}
+          >
+            Previous
+          </ButtonForMouse>
+        )}
       </div>
       {editStage === EDIT_STAGE.PLACEMENT && (
 				<div // RESIZE AREA
@@ -160,7 +144,7 @@ export const PanelEditComponent: React.FC<{
 						flexDirection: "column",
 						justifyContent: "center",
 
-            background: GLOBAL_COLOR.MASK,
+            background: GLOBAL_COLOR.BLACK,
             border: `1px solid ${GLOBAL_COLOR.MINIMUM}`,
             pointerEvents: "none",
 

@@ -1,32 +1,14 @@
-import React, { Dispatch, JSX, SetStateAction, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { EVCommandType, EVControlType, IVCommandMessage } from '../../../main/virtual/types'
+import { IAvionicsComponentArg } from '../types'
 
-export const getVirtualSlider = (args: {
-  params: any,
-  getUIElement: (
-    isTooLow: boolean,
-    normalizedValue: number,
-    axisValue: number,
-    setAxisValue: Dispatch<SetStateAction<number>>,
-  ) => JSX.Element
-}) => {
+export const getVirtualSlider = (args: IAvionicsComponentArg) => {
   return (
-    <VirtualSlider
-      params={args.params}
-      getUIElement={args.getUIElement}
-    />
+    <VirtualSlider {...args}/>
   )
 }
 
-export const VirtualSlider: React.FC<{
-  params: any,
-  getUIElement: (
-    isTooLow: boolean,
-    normalizedValue: number,
-    axisValue: number,
-    setAxisValue: Dispatch<SetStateAction<number>>
-  ) => JSX.Element
-}> = ({
+export const VirtualSlider: React.FC<IAvionicsComponentArg> = ({
   params,
   getUIElement
 }) => {

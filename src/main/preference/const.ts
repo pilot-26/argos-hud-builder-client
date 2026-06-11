@@ -1,0 +1,32 @@
+import { EAppType, IPreference } from "../../shared/app-preference-types"
+import { CLIPBOARD_CONST } from "../clipboard/const"
+import { TELEMETRY_CONST } from "../telemetry/const"
+import { VIRTUAL_CONST } from "../virtual/const"
+
+export class PREFERENCE_CONST {
+  static readonly DEFAULT_PREFERENCE: IPreference = {
+    AUTO_OPEN_PANEL: false,
+    APP_TYPE: EAppType.SERVER_CLIENT,
+    VIRTUAL_HOTAS_SERVER_PREFERENCE: {
+      PORT: VIRTUAL_CONST.DEFAULT_PORT
+    },
+    VIRTUAL_HOTAS_CLIENT_PREFERENCE: {
+      HOST: VIRTUAL_CONST.DEFAULT_HOST,
+      PORT: VIRTUAL_CONST.DEFAULT_PORT
+    },
+    TELEMETRY_SERVER_PREFERENCE: {
+      PORT: TELEMETRY_CONST.DEFAULT_PORT
+    },
+    TELEMETRY_CLIENT_PREFERENCE: {
+      HOST: TELEMETRY_CONST.DEFAULT_HOST,
+      PORT: TELEMETRY_CONST.DEFAULT_PORT
+    },
+    CLIPBOARD_SERVER_PREFERENCE: {
+      PORT: CLIPBOARD_CONST.DEFAULT_PORT
+    },
+    CLIPBOARD_CLIENT_PREFERENCE: {
+      HOST: CLIPBOARD_CONST.DEFAULT_HOST,
+      PORT: CLIPBOARD_CONST.DEFAULT_PORT
+    }
+  }
+}

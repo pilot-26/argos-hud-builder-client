@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain, Menu, Tray } from 'electron'
-import "./handler/overlayHandler"
-import "./handler/storageHandler"
-import "./handler/virtualAPIHandler"
-import "./handler/virtualHandler"
+import "./handlerClient/overlayHandler"
+import "./handlerShared/storageHandler"
+import "./handlerClient/virtualAPIHandler"
+import "./handlerServer/virtualHandler"
+import "./handlerServer/clipboardHandler"
 import path from 'path'
 import { MAIN_CONST } from './const'
 import { WindowManager } from './windowManager'
@@ -101,6 +102,10 @@ ipcMain.handle('close-window', () => {
 ipcMain.handle('is-window-maximized', () => {
   return WindowManager.mainWindow?.isMaximized() || false
 })
+
+const initApp = async () => {
+  
+}
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)

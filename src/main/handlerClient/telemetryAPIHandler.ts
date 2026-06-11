@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { TCPClient } from '../tcp/client'
-import { INPUT_CONST } from '../input/const'
+import { INPUT_CONST } from '../telemetry/const'
 
 let mTCPClient: TCPClient | undefined = undefined
 ipcMain.handle("input-api-connect", async (event) => {

@@ -29,6 +29,7 @@ const onPinChange = (browserWindow: BrowserWindow, id: string, isPinned: boolean
 }
 
 const onMaximizeChange = (browserWindow: BrowserWindow, id: string, isMaximized: boolean) => {
+  console.log("onMaximizeChange", id, isMaximized)
   browserWindow.webContents.send("on-maximize-change", id, isMaximized)
   WindowManager.mainWindow?.webContents.send("on-maximize-change", id, isMaximized)
 }
