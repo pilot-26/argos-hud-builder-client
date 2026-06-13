@@ -1,4 +1,5 @@
 export class OVERLAY_CONST {
+  static readonly STORAGE_DIR = 'Overlays'
   static readonly DEFAULT_WIDTH = 300
   static readonly DEFAULT_HEIGHT = 300
   static readonly DEFAULT_POSITION_X = 0

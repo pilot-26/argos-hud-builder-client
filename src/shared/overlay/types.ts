@@ -17,6 +17,7 @@ export interface IOverlayTemplate {
 export interface IOverlayOption extends IOverlayTemplate {
   id: string
   route: string
+  args: string
   isMaximized: boolean
   isPinned: boolean
   isInteractable: boolean

@@ -1,4 +1,4 @@
-import { IPreference } from "../../../shared/app-preference-types";
+import { IPreference } from "../../../shared/preference/types";
 import { FileStorage } from "../../storage/fileStorage";
 import { PREFERENCE_CONST } from "../const";
 

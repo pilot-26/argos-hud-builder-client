@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IOverlayOption } from '../shared/overlay-types'
+import { IOverlayOption } from '../shared/overlay/types'
 
 declare global {
   const SHOW_CONSOLE = false
@@ -14,7 +14,7 @@ declare global {
     },
     overlay: {
       receive: (channel: string, func: (...args: any[]) => void) => void
-      create: (overlay: IOverlayOption, args?: object) => Promise<void>
+      create: (overlay: IOverlayOption, args?: string) => Promise<void>
       close: (id: string) => Promise<void>
       pin: (id: string, isPinned: boolean) => Promise<void>
       maximize: (id: string, isMaximized: boolean) => Promise<void>
@@ -44,6 +44,7 @@ declare global {
       delete: (name: string) => Promise<void>
       list: (path: string) => Promise<string[]>
       flush: () => Promise<void>
+      clear: () => Promise<void>
     }
   }
 }
@@ -95,5 +96,6 @@ contextBridge.exposeInMainWorld('storage', {
   read: (name: string) => ipcRenderer.invoke('read', name),
   delete: (name: string) => ipcRenderer.invoke('delete', name),
   list: (path: string) => ipcRenderer.invoke('list', path),
-  flush: () => ipcRenderer.invoke('flush')
+  flush: () => ipcRenderer.invoke('flush'),
+  clear: () => ipcRenderer.invoke('clear')
 })

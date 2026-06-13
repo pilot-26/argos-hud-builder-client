@@ -57,9 +57,9 @@ const App: React.FC = () => {
     case PANEL_CONST.PANEL_ROUTE:
       return (
         (paramObject.isEditMode) ? (
-          <PanelEditComponent overlayId={paramObject.id}  panelId={paramObject.panelId} />
+          <PanelEditComponent overlayId={paramObject.overlayId}  panelId={paramObject.panelId} />
         ) : (
-          <PanelComponent overlayId={paramObject.id} panelId={paramObject.panelId} />
+          <PanelComponent overlayId={paramObject.overlayId} panelId={paramObject.panelId} />
         )
       )
   }

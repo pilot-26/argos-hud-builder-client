@@ -1,4 +1,4 @@
-import { EAppType, IPreference } from "../../shared/app-preference-types"
+import { EAppType, IPreference } from "../../shared/preference/types"
 import { CLIPBOARD_CONST } from "../clipboard/const"
 import { TELEMETRY_CONST } from "../telemetry/const"
 import { VIRTUAL_CONST } from "../virtual/const"

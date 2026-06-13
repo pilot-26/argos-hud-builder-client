@@ -7,6 +7,10 @@ import "./handlerServer/clipboardHandler"
 import path from 'path'
 import { MAIN_CONST } from './const'
 import { WindowManager } from './windowManager'
+import { Overlay } from '../shared/overlay/overlay'
+import { MainStorage } from './storage/storage'
+import { OVERLAY_CONST } from '../shared/overlay/const'
+import { createOverlay } from './handlerClient/overlayHandler'
 
 const isDev = !app.isPackaged
 if (require('electron-squirrel-startup')) {
@@ -104,13 +108,19 @@ ipcMain.handle('is-window-maximized', () => {
 })
 
 const initApp = async () => {
-  
+  const mainStorage = new MainStorage(OVERLAY_CONST.STORAGE_DIR)
+  const list = await Overlay.getList(mainStorage)
+  for (const each of list) {
+    const option = each.toOption()
+    createOverlay(option, option.args)
+  }
 }
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
   createTray()
-  createMainWindow()
+  // createMainWindow()
+  initApp()
 })
 
 app.disableHardwareAcceleration()

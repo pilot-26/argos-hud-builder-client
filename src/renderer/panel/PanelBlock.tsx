@@ -41,7 +41,8 @@ export const PanelBlock: React.FC<{
 		initOverlay()
 	}, [])
 
-	const deletePanel = () => {
+	const deletePanel = async () => {
+		await item.remove()
 		onDelete?.(item.id)
 	}
 
@@ -56,14 +57,14 @@ export const PanelBlock: React.FC<{
 		await window.storage.flush()
 		await window.overlay.close(item.overlayOptionId)
 		await item.sync()
-		const args: any = {
-			panelId: item.id
-		}
+
+		const argsStr = `panelId=${item.id}&overlayId=${item.overlayOptionId}`
 		item.overlay.isPinned = true
 		item.isOverlayEnabled = true
+		item.overlay.args = argsStr
 		await item.save()
 		await window.storage.flush()
-		window.overlay.create(item.overlay.getOption(), args)
+		window.overlay.create(item.overlay.toOption(), argsStr)
 	}
 
 	const disableOverlay = async () => {
@@ -78,16 +79,12 @@ export const PanelBlock: React.FC<{
 	const handleCustomize = async () => {
 		await window.storage.flush()
 		await window.overlay.close(item.overlayOptionId)
-		
 		await item.build()
-		const args: any = {
-			panelId: item.id,
-			isEditMode: true
-		}
+
 		item.overlay.isPinned = false
 		item.overlay.isInteractable = true
-		await item.overlay.save()
-		await window.overlay.create(item.overlay.getOption(), args)
+		item.save()
+		await window.overlay.create(item.overlay.toOption(), `panelId=${item.id}&overlayId=${item.overlayOptionId}&isEditMode=${true}`)
 	}
 
 	const handleShow = () => {

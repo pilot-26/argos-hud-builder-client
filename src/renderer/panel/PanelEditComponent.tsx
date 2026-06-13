@@ -76,10 +76,9 @@ export const PanelEditComponent: React.FC<{
     window.overlay.pin(overlayId, false)
     setEditStage(EDIT_STAGE.PLACEMENT)
   }
-
-  return (
+  if (panel) return (
     <OverlayLowProfile
-      overlayId={overlayId}
+      overlay={panel.overlay}
     >
       <div
         style={{

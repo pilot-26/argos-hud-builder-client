@@ -47,6 +47,10 @@ export class FileStorage {
         return null
       }
       const content = fs.readFileSync(filePath, 'utf-8')
+      console.log(content)
+      const parsed = JSON.parse(content)
+      console.log(parsed)
+      console.log(typeof parsed)
       const data = JSON.parse(content) as T
       FileStorage.cache.set(filename, data)
       return data
@@ -108,6 +112,18 @@ export class FileStorage {
       return files
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  static clear(): void {
+    console.log("Clearing all files")
+    FileStorage.cache.clear()
+    FileStorage.pendingWrites.clear()
+    FileStorage.flush()
+    try {
+      fs.rmdirSync(FileStorage.getStorageDir())
+    } catch (error) {
+      console.error(`Error deleting storage directory:`, error)
     }
   }
 }

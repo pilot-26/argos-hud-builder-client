@@ -1,6 +1,6 @@
 import { JSX } from "react"
 import { IEmbeddedTemplate } from "../embedded/types"
-import { EControlType } from "@shared/avionics-types"
+import { EControlType, IControl } from "@shared/avionics/types"
 
 export enum EAvionicsType {
 	SLIDER = "SLIDER",
@@ -32,4 +32,11 @@ export interface IAvionicsTemplate {
 	controlTypeList?: EControlType[]
 
 	embeddedTemplate: IEmbeddedTemplate
+}
+
+export interface IAvionicsOption {
+  id: string
+  controlList?: IControl[]
+  templateId: string
+  embeddedOptionId: string
 }

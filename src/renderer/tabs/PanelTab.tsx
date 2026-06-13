@@ -3,9 +3,7 @@ import { GLOBAL_STYLE } from '../style/style'
 import { GLOBAL_COLOR } from '../style/color'
 import ModalTitleBar from '../components/ModalTitleBar'
 import ButtonForMouse from '../components/ButtonForMouse'
-import { PanelStorage } from '../panel/util/panelStorage'
 import { IPanelTemplate } from '../panel/types'
-import { PanelOption } from '../panel/data/panelOption'
 import { Panel } from '../panel/data/panel'
 import { PanelBlock } from '../panel/PanelBlock'
 import { PANEL_CONST } from '../panel/const'
@@ -15,20 +13,18 @@ export const PanelTab: React.FC = () => {
   const [selectedPanelList, setSelectedPanelList] = React.useState<Panel[]>([])
 
   const loadPanel = async () => {
-    const saved = await PanelStorage.list()
+    const saved = await Panel.list()
     setSelectedPanelList(saved)
   }
 
   const handlePanelDelete = async (id: string) => {
-    await PanelStorage.remove(id)
     loadPanel()
   }
 
   const handlePanelAdd = async (item: IPanelTemplate) => {
     const userParam = {name: "1"}
-    const newPanelOption = await new PanelOption(item, userParam).create()
-    const newPanel = new Panel(newPanelOption)
-    await newPanel.sync()
+    const newPanel = await Panel.getFromTemplate(item, userParam)
+    await newPanel.save()
     await window.storage.flush()
     
     loadPanel()

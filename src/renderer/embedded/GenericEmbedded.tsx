@@ -84,10 +84,6 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isLocked) {
-      return
-    }
-
     e.preventDefault()
 
     if ((e.target as HTMLElement).classList.contains('resize-handle')) return
@@ -108,10 +104,6 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (isLocked) {
-      return
-    }
-
     e.preventDefault()
 
     const direction = getResizeDirection(e)
@@ -130,9 +122,6 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleTouchMove = (e: TouchEvent) => {
-    if (isLocked) {
-      return
-    }
     e.preventDefault()
     
     if (isDragging) {
@@ -180,28 +169,18 @@ export const GenericEmbedded: React.FC<{
   }
 
   const handleMouseUp = () => {
-    if (isLocked) {
-      return
-    }
     setIsDragging(false)
     setIsResizing(false)
     setResizeDirection(null)
   }
 
   const handleTouchEnd = () => {
-    if (isLocked) {
-      return
-    }
     setIsDragging(false)
     setIsResizing(false)
     setResizeDirection(null)
   }
 
   React.useEffect(() => {
-    if (isLocked) {
-      return
-    }
-
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         const newX = snapToGrid(e.clientX - dragStartRef.current.x)
@@ -262,10 +241,6 @@ export const GenericEmbedded: React.FC<{
   }, [isDragging, isResizing, handleMouseUp, handleTouchMove, handleTouchEnd, embedded])
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    if (isLocked) {
-      return
-    }
-    
     e.preventDefault()
   }
 
@@ -282,9 +257,6 @@ export const GenericEmbedded: React.FC<{
         borderRadius: '8px',
         boxSizing: 'border-box',
       }}
-      onMouseOver={handleMouseEnter}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
     >
       {!isLocked && <div
         style={{
@@ -298,6 +270,9 @@ export const GenericEmbedded: React.FC<{
           border: `2px dashed ${GLOBAL_COLOR.MINIMUM}`,
           padding: RESIZE_HANDLE_SIZE,
         }}
+        onMouseOver={handleMouseEnter}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <div
           style={{

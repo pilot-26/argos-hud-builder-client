@@ -12,21 +12,23 @@ export const PanelComponent: React.FC<{
   panelId
 }) => {
   const [selectedAvionicsList, setSelectedAvionicsList] = React.useState<Avionics[]>([])
+  const [panel, setPanel] = React.useState<Panel>()
 
   useEffect(() => {
     const loadPanel = async () => {
       const panelFromStorage = await Panel.getFromId(panelId)
       if (!panelFromStorage) return
       await panelFromStorage.build()
+      setPanel(panelFromStorage)
       setSelectedAvionicsList(panelFromStorage.avionicsList)
       console.log("selectedAvionicsList = " + JSON.stringify(selectedAvionicsList))
     }
     loadPanel()
   }, [])
 
-  return (
+  if (panel) return (
     <OverlayLowProfile
-      overlayId={overlayId}
+      overlay={panel.overlay}
     >
       <div
         style={{

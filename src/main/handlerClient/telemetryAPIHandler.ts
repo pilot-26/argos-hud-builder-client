@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { TCPClient } from '../tcp/client'
-import { INPUT_CONST } from '../telemetry/const'
+import { TELEMETRY_CONST } from '../telemetry/const'
 
 let mTCPClient: TCPClient | undefined = undefined
 ipcMain.handle("input-api-connect", async (event) => {
@@ -8,7 +8,7 @@ ipcMain.handle("input-api-connect", async (event) => {
     await mTCPClient.disconnect()
     mTCPClient = undefined
   }
-  mTCPClient = new TCPClient(INPUT_CONST.DEFAULT_HOST, INPUT_CONST.DEFAULT_PORT)
+  mTCPClient = new TCPClient(TELEMETRY_CONST.DEFAULT_HOST, TELEMETRY_CONST.DEFAULT_PORT)
   await mTCPClient.connect()
 })
 

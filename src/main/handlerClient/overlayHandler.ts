@@ -2,11 +2,26 @@ import { app, BrowserWindow, ipcMain, Menu, screen } from 'electron'
 import path from 'path'
 import { MAIN_CONST } from '../const'
 import { WindowManager } from '../windowManager'
-import { IOverlayOption } from "../../shared/overlay-types"
+import { IOverlayOption } from '../../shared/overlay/types'
+import { Overlay } from '../../shared/overlay/overlay'
+import { MainStorage } from '../storage/storage'
+import { OVERLAY_CONST } from '../../shared/overlay/const'
 
 const isDev = !app.isPackaged
 
-export const optionMap = new Map<string, IOverlayOption>()
+export const overlayMap = new Map<string, Overlay>()
+
+let saveTimeout: NodeJS.Timeout | null = null
+const debounceSave = (overlay: Overlay) => {
+  overlayMap.set(overlay.id, overlay)
+  if (saveTimeout) {
+    clearTimeout(saveTimeout)
+  }
+  saveTimeout = setTimeout(() => {
+    console.log("saved")
+    overlay.save()
+  }, 500)
+}
 
 const onCreate = (browserWindow: BrowserWindow, id: string) => {
   browserWindow.webContents.send("on-create", id)
@@ -34,14 +49,12 @@ const onMaximizeChange = (browserWindow: BrowserWindow, id: string, isMaximized:
   WindowManager.mainWindow?.webContents.send("on-maximize-change", id, isMaximized)
 }
 
-ipcMain.handle('create', (
-  event,
-  overlayOption: IOverlayOption,
-  args?: object
-) => {
+export const createOverlay = (overlayOption: IOverlayOption, args?: string) => {
   console.log(overlayOption)
-
   if (WindowManager.windowMap.has(overlayOption.id)) return
+
+  const overlay = new Overlay(overlayOption, new MainStorage(OVERLAY_CONST.STORAGE_DIR))
+
   const browserWindow = new BrowserWindow({
     width: overlayOption.width,
     height: overlayOption.height,
@@ -64,40 +77,32 @@ ipcMain.handle('create', (
   
   browserWindow.setAlwaysOnTop(overlayOption.isPinned)
   browserWindow.setResizable(!overlayOption.isPinned)
-  if (!overlayOption.isInteractable) {
-    browserWindow.setIgnoreMouseEvents(overlayOption.isPinned)
-  }
   if (overlayOption.fixedAspectRatio) {
     browserWindow.setAspectRatio(overlayOption.fixedAspectRatio)
   }
-  setMaximize(overlayOption.id, browserWindow, overlayOption.isMaximized, overlayOption)
-
-  let additionalArgs = ""
-  if (args) {
-  Object.entries(args).forEach(([prop, value]) => {
-    additionalArgs += `&${prop}=${value}`
-  })
-    console.log(additionalArgs)
-  }
+  setMaximize(overlayOption.id, browserWindow, overlayOption.isMaximized, overlay)
 
   if (isDev) {
-    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}`)
+    browserWindow.loadURL(`http://localhost:5173/#/${overlayOption.route}?${args || ""}`)
   } else {
-    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?id=${overlayOption.id}${additionalArgs}` })
+    browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: `/${overlayOption.route}?${args || ""}` })
   }
 
   browserWindow.on('move', () => {
     const [width, height] = browserWindow.getSize()
     const [x, y] = browserWindow.getPosition()
-    const currentOption = optionMap.get(overlayOption.id)
-    if (currentOption) {
-      if (currentOption.isMaximized) {
-        optionMap.set(overlayOption.id, { ...currentOption, width: currentOption.width, height: currentOption.height, x, y })
-        onSizePositionChange(browserWindow, overlayOption.id, {width: currentOption.width, height: currentOption.height}, { x, y })
-
+    const current = overlayMap.get(overlayOption.id)
+    if (current) {
+      if (current.isMaximized) {
+        current.x = x
+        current.y = y
+        onSizePositionChange(browserWindow, overlayOption.id, {width: current.width, height: current.height}, { x, y })
+        debounceSave(current)
       } else {
-        optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
+        current.width = width
+        current.height = height
         onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
+        debounceSave(current)
       }
     }
   })
@@ -105,18 +110,20 @@ ipcMain.handle('create', (
   browserWindow.on("resize", () => {
     const [width, height] = browserWindow.getSize()
     const [x, y] = browserWindow.getPosition()
-    const currentOption = optionMap.get(overlayOption.id)
-    if (currentOption) {
-      if (currentOption.isMaximized) return
-      optionMap.set(overlayOption.id, { ...currentOption, width, height, x, y })
+    const current = overlayMap.get(overlayOption.id)
+    if (current) {
+      if (current.isMaximized) return
+      current.width = width
+      current.height = height
       onSizePositionChange(browserWindow, overlayOption.id, {width, height}, { x, y })
+      debounceSave(current)
     }
   })
 
   browserWindow.on('close', () => {
     onClose(browserWindow, overlayOption.id)
     WindowManager.windowMap.delete(overlayOption.id)
-    optionMap.delete(overlayOption.id)
+    overlayMap.delete(overlayOption.id)
   })
 
   browserWindow.show()
@@ -124,12 +131,21 @@ ipcMain.handle('create', (
   onCreate(browserWindow, overlayOption.id)
 
   WindowManager.windowMap.set(overlayOption.id, browserWindow)
-  optionMap.set(overlayOption.id, overlayOption)
+  overlayMap.set(overlayOption.id, overlay)
   console.log("created: " + overlayOption.id)
 
   if (MAIN_CONST.SHOW_CONSOLE) {
     browserWindow.webContents.openDevTools()
   }
+}
+
+ipcMain.handle('create', (
+  event,
+  overlayOption: IOverlayOption,
+  args?: string
+) => {
+  createOverlay(overlayOption, args)
+  return overlayOption
 })
 
 const close = (id: string) => {
@@ -167,12 +183,12 @@ const getBrowserWindow = (id: string): BrowserWindow => {
   }
   return browserWindow
 }
-const getOverlayOption = (id: string): IOverlayOption => {
-  const overlayOption = optionMap.get(id)
-  if (!overlayOption) {
+const getOverlay = (id: string): Overlay => {
+  const overlay = overlayMap.get(id)
+  if (!overlay) {
     throw new Error("Overlay not found")
   }
-  return overlayOption
+  return overlay
 }
 
 ipcMain.handle('set-position', (event, id: string, position: { x: number; y: number }) => {
@@ -193,16 +209,13 @@ ipcMain.handle('set-size', (event, id: string, size: { width: number; height: nu
 
 const pin = (id: string, isPinned: boolean) => {
   const overlayWindow = getBrowserWindow(id)
-  const overlayOption = getOverlayOption(id)
+  const overlayOption = getOverlay(id)
 
   overlayWindow.setAlwaysOnTop(isPinned)
   overlayWindow.setResizable(!isPinned)
-  if (!overlayOption.isInteractable) {
-    overlayWindow.setIgnoreMouseEvents(isPinned)
-  }
 
   overlayOption.isPinned = isPinned
-  optionMap.set(id, overlayOption)
+  overlayMap.set(id, overlayOption)
 
   onPinChange(overlayWindow, id, isPinned)
 }
@@ -211,11 +224,11 @@ ipcMain.handle("pin", (event, id: string, isPinned: boolean) => {
   return pin(id, isPinned)
 })
 
-function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: boolean, overlayOption?: IOverlayOption) {
+function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: boolean, overlay?: Overlay) {
   if (isMaximized) {
-    if (overlayOption) {
-      overlayOption.isMaximized = true
-      optionMap.set(id, overlayOption)
+    if (overlay) {
+      overlay.isMaximized = true
+      overlayMap.set(id, overlay)
     }
 
     const winBounds = overlayWindow.getBounds()
@@ -225,21 +238,22 @@ function setMaximize(id: string, overlayWindow: BrowserWindow, isMaximized: bool
     overlayWindow.setPosition(display.bounds.x, display.bounds.y)
     console.log(display.bounds.x, display.bounds.y)
   } else {
-    if (overlayOption) {
-      overlayOption.isMaximized = false
-      optionMap.set(id, overlayOption)
-      overlayWindow.setSize(overlayOption.width, overlayOption.height)
-      overlayWindow.setPosition(overlayOption.x, overlayOption.y)
+    if (overlay) {
+      overlay.isMaximized = false
+      overlayMap.set(id, overlay)
+      overlayWindow.setSize(overlay.width, overlay.height)
+      overlayWindow.setPosition(overlay.x, overlay.y)
     }
   }
 }
 
 const maximize = (id: string, isMaximized: boolean) => {
   const overlayWindow = getBrowserWindow(id)
-  const overlayOption = getOverlayOption(id)
+  const overlay = getOverlay(id)
 
-  setMaximize(id, overlayWindow, isMaximized, overlayOption)
+  setMaximize(id, overlayWindow, isMaximized, overlay)
   onMaximizeChange(overlayWindow, id, isMaximized)
+  debounceSave(overlay)
 }
 ipcMain.handle('maximize', (
   event,
@@ -294,13 +308,13 @@ ipcMain.on("show-context-menu", (
     }
   }
   const list = []
-  const overlayOption = optionMap.get(id)
-  // if (overlayOption?.isPinned) {
-  //   list.push(unpinItem)
-  // } else {
-  //   list.push(pinItem)
-  // }
-  if (overlayOption?.isMaximized) {
+  const overlay = overlayMap.get(id)
+  if (overlay?.isPinned) {
+    list.push(unpinItem)
+  } else {
+    list.push(pinItem)
+  }
+  if (overlay?.isMaximized) {
     list.push(restoreItem)
   } else {
     list.push(maximizeItem)

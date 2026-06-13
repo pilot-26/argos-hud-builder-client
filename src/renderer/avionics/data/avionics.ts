@@ -1,14 +1,16 @@
-import { IAvionicsTemplate } from "../types"
+import { v4 as uuidv4 } from 'uuid'
+import { IAvionicsOption, IAvionicsTemplate } from "../types"
 import { AVIONICS_CONST } from "../const"
 import { Embedded } from "../../embedded/data/embedded"
-import { AvionicsStorage } from "../util/avionicsStorage"
-import { IAvionicsOption, IControl } from "@shared/avionics-types"
+import { IControl } from "@shared/avionics/types"
+import { AAppData } from "@shared/common/appData"
+import { IStorage } from '@shared/common/storage'
+import { RendererStorage } from '../../util/storage'
 
 /**
  * For filling up the blanks after getting serialized HUD option from storage
  */
-export class Avionics implements IAvionicsOption {
-  id: string
+export class Avionics extends AAppData implements IAvionicsOption {
   controlList?: IControl[] | undefined
 
   templateId: string
@@ -17,8 +19,10 @@ export class Avionics implements IAvionicsOption {
   template!: IAvionicsTemplate
   embedded!: Embedded
 
+  storage: IStorage = new RendererStorage(AVIONICS_CONST.STORAGE_PATH)
+
   constructor (param: IAvionicsOption) {
-    this.id = param.id
+    super(param)
     this.templateId = param.templateId
     this.embeddedOptionId = param.embeddedOptionId
     this.controlList = param.controlList
@@ -36,28 +40,48 @@ export class Avionics implements IAvionicsOption {
   }
 
   static async getFromId(id: string): Promise<Avionics | undefined> {
-    const option = await AvionicsStorage.get(id)
-    if (option) {
-      return new Avionics(option)
+    const storage = new RendererStorage(AVIONICS_CONST.STORAGE_PATH)
+    let option = await storage.read<IAvionicsOption>(id)
+
+    if (!option) {
+      throw new Error("OPTION NOT FOUND")
     }
-    return undefined
+    return new Avionics(option)
   }
 
-  async sync() {
-    const newThis = await AvionicsStorage.get(this.id)
-    if (newThis) {
-      Object.assign(this, newThis)
+  static async getFromTemplate(template: IAvionicsTemplate): Promise<Avionics> {
+    let option: IAvionicsOption = {
+        id: uuidv4(),
+        controlList: undefined,
+        templateId: template.id,
+        embeddedOptionId: uuidv4(),
+      }
+    if (template.controlTypeList) {
+      option.controlList = []
+      for (const each of template.controlTypeList) {
+        option.controlList.push({
+          id: uuidv4(),
+          type: each
+        })
+      }
     }
+    option.templateId = template.id
+    const avionices = new Avionics(option)
+    avionices.embedded = Embedded.getFromTemplate(template.embeddedTemplate)
+    avionices.embeddedOptionId = avionices.embedded.id
+
+    return avionices
   }
 
-  async build(): Promise<Avionics> {
+  async build(): Promise<void> {
     const embedded = await Embedded.getFromId(this.embeddedOptionId)
-    if (!embedded) throw new Error()
+    if (!embedded) {
+      throw new Error("EMBEDDED NOT FOUND")
+    }
     this.embedded = embedded
-    return this
   }
 
-  getOption(): IAvionicsOption {
+  toOption(): IAvionicsOption {
     return {
       id: this.id,
       controlList: this.controlList,
@@ -68,6 +92,11 @@ export class Avionics implements IAvionicsOption {
 
   async save() {
     await this.embedded.save()
-    await AvionicsStorage.set(this)
+    await this.storage.write(this.id, this.toOption())
+  }
+
+  async remove(): Promise<void> {
+    await this.embedded.remove()
+    await this.storage.delete(this.id)
   }
 }

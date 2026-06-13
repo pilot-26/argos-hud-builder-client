@@ -20,3 +20,7 @@ ipcMain.handle("list", (event, path: string) => {
 ipcMain.handle("flush", () => {
   FileStorage.flush()
 })
+
+ipcMain.handle("clear", () => {
+  FileStorage.clear()
+})

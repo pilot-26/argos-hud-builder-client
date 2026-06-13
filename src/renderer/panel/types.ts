@@ -1,4 +1,4 @@
-import { IOverlayTemplate } from "@shared/overlay-types"
+import { IOverlayTemplate } from "@shared/overlay/types"
 
 /**
  * Needs to be serialized
